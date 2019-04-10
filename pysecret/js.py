@@ -21,10 +21,10 @@ class JsonSecret(CachedSpam):
         with open(self.secret_file, "rb") as f:
             self.data = json.loads(f.read().decode("utf-8"))
 
-    def set_value(self, json_path, value):
+    def set(self, json_path, value):
         set_value(self.data, json_path, value)
         json.dump(self.data, self.secret_file,
                   pretty=True, ensure_ascii=False, overwrite=True, verbose=False)
 
-    def get_value(self, json_path):
+    def get(self, json_path):
         return get_value(self.data, json_path)

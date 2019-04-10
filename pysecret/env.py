@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-from .helper import HOME, append_line_if_not_exists, set_env_var
+from .helper import HOME
+from .env_helper import append_line_if_not_exists
 
 
-class Env(object):
+class EnvSecret(object):
     """
     """
 
@@ -21,7 +22,7 @@ class Env(object):
         return 'export {var}="{value}"'.format(var=var, value=value)
 
     def set(self, var, value, temp=False):
-        set_env_var(var, value)
+        os.environ[var] = str(value)
         if temp is False:
             append_line_if_not_exists(
                 self.pysecret_script, self.export_cmd_text(var, value))
@@ -29,7 +30,7 @@ class Env(object):
     def get(self, var):
         return os.environ[var]
 
-    #-- add ``source ~/<pysecret_file>`` to bash profile file
+    # -- add ``source ~/<pysecret_file>`` to bash profile file
     @property
     def source_pysecret_command(self):
         return "source ~/{}".format(self.pysecret_file)
