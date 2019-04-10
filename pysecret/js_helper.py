@@ -21,6 +21,14 @@ def set_value(data, json_path, value):
     return data
 
 
+def get_value(data, json_path):
+    paths = json_path.split(".")
+    value = data
+    for key in paths:
+        value = value[key]
+    return value
+
+
 def del_key(data, json_path):
     paths = json_path.split(".")
     for key in paths[:-1]:

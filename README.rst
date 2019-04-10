@@ -55,6 +55,21 @@ Welcome to ``pysecret`` Documentation
 Documentation for ``pysecret``.
 
 
+
+Load Data From Environment
+------------------------------------------------------------------------------
+
+Usage:
+
+    pysecret env set VAR "value" # add `export VAR="value"` to `~/.bashrc_pysecret`
+    pysecret env apply .bashrc # add `source ~/.bashrc_pysecret` line to `~/.bashrc`
+    pysecret env apply .bash_profile # add `source ~/.bashrc_pysecret` line to `~/.bash_profile`
+    pysecret env open # open
+
+
+
+
+
 .. _install:
 
 Install

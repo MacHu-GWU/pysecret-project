@@ -29,13 +29,16 @@ class CachedSpam(object):
     @classmethod
     def new(cls, *args, **kwargs):
         cls._init_cache()
+
         if cls.settings_uuid_field is None:
             msg = "You have to specify `CachedSpam.settings_uuid_field`!"
             raise NotImplementedError(msg)
+
         if cls.settings_uuid_field not in kwargs:
             msg = "Can't find '{}' in {} Please use `CachedSpam.new({}=xxx)`".format(
                 cls.settings_uuid_field, kwargs, cls.settings_uuid_field)
             raise SyntaxError(msg)
+
         uuid = kwargs[cls.settings_uuid_field]
         if uuid in cls._cache:
             return cls._cache[uuid]

@@ -2,6 +2,7 @@
 pysecret_venv/
 pysecret.egg-info/
 pysecret-*/
+.json
 
 
 # Byte-compiled / optimized / DLL files
