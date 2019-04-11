@@ -59,6 +59,8 @@ def test():
     assert isinstance(logger_manager._cache["system"], Logger)
     assert isinstance(config_manager._cache["system"], Config)
 
+    logger_manager.clear()
+
 
 if __name__ == "__main__":
     import os

@@ -15,7 +15,8 @@ def test_set_value_del_key():
 
     js_helper.set_value(data, "alice.name", "Alice")
     js_helper.set_value(data, "alice.dob", "2000-01-01")
-    assert data == {"meta": "profile", "alice": {"name": "Alice", "dob": "2000-01-01"}}
+    assert data == {"meta": "profile", "alice": {
+        "name": "Alice", "dob": "2000-01-01"}}
 
     js_helper.set_value(data, "bob.name", "Bob")
     js_helper.set_value(data, "bob.dob", "2000-01-01")

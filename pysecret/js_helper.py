@@ -3,7 +3,7 @@
 import os
 
 
-def create_json_if_not_exists(path):
+def create_json_if_not_exists(path):  # pragma: no cover
     if not os.path.exists(path):
         with open(path, "wb") as f:
             f.write("{}".encode("utf-8"))

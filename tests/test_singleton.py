@@ -5,7 +5,8 @@ from pytest import raises
 from pysecret.singleton import CachedSpam
 
 
-class BadLogger1(CachedSpam): pass
+class BadLogger1(CachedSpam):
+    pass
 
 
 class BadLogger2(CachedSpam):
