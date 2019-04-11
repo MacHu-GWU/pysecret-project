@@ -41,10 +41,10 @@ class TestEnv(object):
         assert "test_pysecret_var1" in os.environ
 
         env = EnvSecret()
-        env.apply_source_pysecret_to_bashrc()
-        env.apply_source_pysecret_to_bash_profile()
-        env.apply_source_pysecret_to_config_fish()
-        env.apply_source_pysecret_to_zshrc()
+        # env.apply_source_pysecret_to_bashrc()
+        # env.apply_source_pysecret_to_bash_profile()
+        # env.apply_source_pysecret_to_config_fish()
+        # env.apply_source_pysecret_to_zshrc()
 
 
 if __name__ == "__main__":

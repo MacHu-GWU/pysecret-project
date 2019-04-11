@@ -60,7 +60,7 @@ class EnvSecret(object):
         """
         return self.environ[var]
 
-    def unset(self, var): # pragma: no cover
+    def unset(self, var):  # pragma: no cover
         raise NotImplementedError("not implemented yet!")
 
     # -- add ``source ~/<pysecret_file>`` to bash profile file
@@ -68,22 +68,22 @@ class EnvSecret(object):
     def source_pysecret_command(self):
         return "source ~/{}".format(self.pysecret_file)
 
-    def apply_source_pysecret_to_bashrc(self):
+    def apply_source_pysecret_to_bashrc(self):  # pragma: no cover
         append_line_if_not_exists(
             self.bashrc_script, self.source_pysecret_command
         )
 
-    def apply_source_pysecret_to_bash_profile(self):
+    def apply_source_pysecret_to_bash_profile(self):  # pragma: no cover
         append_line_if_not_exists(
             self.bash_profile_script, self.source_pysecret_command
         )
 
-    def apply_source_pysecret_to_zshrc(self):
+    def apply_source_pysecret_to_zshrc(self):  # pragma: no cover
         append_line_if_not_exists(
             self.zshrc_script, self.source_pysecret_command
         )
 
-    def apply_source_pysecret_to_config_fish(self):
+    def apply_source_pysecret_to_config_fish(self):  # pragma: no cover
         append_line_if_not_exists(
             self.config_fish_script, self.source_pysecret_command
         )
