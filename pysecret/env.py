@@ -2,11 +2,12 @@
 
 import os
 from .helper import HOME
-from .env_helper import append_line_if_not_exists
+from .env_helper import append_line_if_not_exists, load_var_value_from_shell_script
 
 
 class EnvSecret(object):
     """
+    Allow to load secret information from environment variable.
     """
 
     pysecret_file = ".bashrc_pysecret"
@@ -18,16 +19,41 @@ class EnvSecret(object):
     config_fish_script = os.path.join(HOME, ".config", "fish", "config.fish")
 
     def export_cmd_text(self, var, value):
-        """create ``export VAR="VALUE"`` command text"""
+        """
+        create ``export VAR="VALUE"`` command text
+        """
         return 'export {var}="{value}"'.format(var=var, value=value)
 
     def set(self, var, value, temp=False):
+        """
+        Set value.
+
+        :type var: str
+        :param var:
+
+        :type value: str
+        :param value:
+
+        :type temp: bool
+        :param temp: if True, then will not write ``export var="value"`` to pysecret file.
+
+        :return: None
+        """
         os.environ[var] = str(value)
         if temp is False:
             append_line_if_not_exists(
                 self.pysecret_script, self.export_cmd_text(var, value))
 
     def get(self, var):
+        """
+        Get value.
+
+        :type var: str
+        :param var:
+
+        :rtype: str
+        :return:
+        """
         return os.environ[var]
 
     # -- add ``source ~/<pysecret_file>`` to bash profile file
@@ -54,3 +80,8 @@ class EnvSecret(object):
         append_line_if_not_exists(
             self.config_fish_script, self.source_pysecret_command
         )
+
+    def load_pysecret_script(self):
+        environ = load_var_value_from_shell_script(self.pysecret_script)
+        for key, value in environ.items():
+            os.environ[key] = value
