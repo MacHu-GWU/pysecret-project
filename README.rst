@@ -51,43 +51,67 @@
 Welcome to ``pysecret`` Documentation
 ==============================================================================
 
-Documentation for ``pysecret``.
+``pysecret`` is a library to ease your life dealing with secret information.
+
+For example, **if you have a database connection information, so you can't include it in your source code, but you want to easily and securely access it**, then ``pysecret`` is the library for you. It provides several options out of the box:
+
+**Features**:
+
+1. access secret in environment variable from commandline, shell scripts, or Python.
+2. access secret in json file from Python.
+3. use AWS Key Management Service or AWS Secret Manager to access your secret info.
+
+For large file or binary data encryption, I highly recommend you to use AWS Key Management Service and AWS Secret Manager to fetch your encryption key, then use `windtalker <https://pypi.org/project/windtalker/>`_ library to encrypt it.
 
 
 
 Load Data From Environment
 ------------------------------------------------------------------------------
 
-**Use with command line / shell script**:
-
-1. put secret infor in ``~/.bashrc_pysecret``
+The idea is: put your secret information in ``~/.bashrc_pysecret`` file.
 
 .. code-block:: bash
 
-    # content of ~/.bashrc_pysecret
-    export DB_SECRET_MYDB_HOST="123.456.789.000"
-    export DB_SECRET_MYDB_USERNAME="username"
-    export DB_SECRET_MYDB_PASSWORD="password"
+    # content of ~/.bashrc_pysecret file
+    export DB_SECRET_MY_DB_PASSWORD="mypassword"
+    ...
 
-2. add ``source ~/.bashrc_pysecret`` line to ``~/.bashrc`` / ``~/.bashrc_pysecret`` / ``~/.zshrc`` / ``~/.config/fish/config.fish``. Or just add it to ``~/.bashrc`` and ``source ~/.bashrc`` in other shell initialization scripts.
+And put ``source ~/.bashrc_pysecret`` into your ``~/.bashrc`` / ``~/.bash_profile`` / ``.zshrc`` ...
 
+**Whenever you need your secret info**:
 
+1. Your interactive command line interface gives you easy access to those secrets.
+2. You can put ``source ~/.bashrc_pysecret`` in your CI / CD scripts.
+3. pysecret allows you to load secret value in python code. By doing this:
 
-Usage:
+.. code-block:: python
 
-    pysecret env set VAR "value" # add `export VAR="value"` to `~/.bashrc_pysecret`
-    pysecret env apply .bashrc # add `source ~/.bashrc_pysecret` line to `~/.bashrc`
-    pysecret env apply .bash_profile # add `source ~/.bashrc_pysecret` line to `~/.bash_profile`
-    pysecret env open # open
+    >>> from pysecret import EnvSecret
+    >>> env = EnvSecret()
+    >>> env.load_pysecret_script()
+    >>> env.get("DB_SECRET_MY_DB_PASSWORD")
+    mypassword
 
+**You can write your secret to** ``~/.bashrc_pysecret`` **file in a pythonic way**:
 
+.. code-block:: python
 
+    from pysecret import EnvSecret
 
+    env = EnvSecret()
 
+    # will create ~/.bashrc_pysecret file if not exists
+    # will update ~/.bashrc_pysecret file too
+    # if you don't want to update ~/.bashrc_pysecret file, just set .set(..., temp=True)
+    env.set("DB_SECRET_MYDB_HOST", "123.456.789.000")
+    env.set("DB_SECRET_MYDB_USERNAME", "username")
+    env.set("DB_SECRET_MYDB_PASSWORD", "password")
 
 
 Load Data From Json File
 ------------------------------------------------------------------------------
+
+The idea is, put your secret info in a json file and load info from it. You can create it manually by your own, or do it in pythonic way:
 
 .. code-block:: python
 
@@ -121,6 +145,26 @@ or you can just create ``$HOME/.pysecret.json`` includes:
     username = js.get("mydb.username")
     password = js.get("mydb.password")
 
+
+AWS Key Management Service and Secret Manager Integration
+------------------------------------------------------------------------------
+
+Create a encryption key in AWS KMS, then encrypt your secret info with the key in AWS Secret Manger. Access it is easy with ``pysecret``.
+
+Suppose you defined a "secret" called "my-secret" in AWS Secret Manger:
+
+- username: "myusername"
+- password: "mypassword"
+
+
+.. code-block:: python
+
+    >>> from pysecret import AWSSecret
+
+    >>> aws_profile = "my_aws_profile"
+    >>> aws = AWSSecret(profile_name=aws_profile)
+    >>> aws.get_secret_value(secret_id="my-secret", key="password")
+    mypassword
 
 
 .. _install:

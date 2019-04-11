@@ -21,7 +21,8 @@ def append_line_if_not_exists(path, line):
     :return: None
     """
     if not os.path.exists(path):  # pragma: no cover
-        return
+        with open(path, "wb") as f:
+            f.write("".encode("utf-8"))
 
     if "\n" in line:  # pragma: no cover
         raise ValueError("'\\n' should not be in the line")

@@ -23,6 +23,7 @@ class AWSSecret(object):
         )
         self.kms_client = boto3.client("kms")
         self.sm_client = ses.client("secretsmanager")
+        self.secret_cache = dict()
 
     def kms_encrypt(self, kms_key_id, text):
         return base64.b64encode(
@@ -38,13 +39,18 @@ class AWSSecret(object):
         )["Plaintext"]).decode("utf-8")
 
     def get_secret_value(self, secret_id, key):
-        response = self.sm_client.get_secret_value(SecretId=secret_id)
-        if "SecretString" in response:
-            secret = response["SecretString"]
+        if self.secret_cache.get(secret_id) is None:
+            response = self.sm_client.get_secret_value(SecretId=secret_id)
+            if "SecretString" in response:
+                secret = response["SecretString"]
+            else:
+                decoded_binary_secret = base64.b64decode(response["SecretBinary"])
+                secret = decoded_binary_secret
+            data = json.loads(secret)
+            self.secret_cache[secret_id] = data
         else:
-            decoded_binary_secret = base64.b64decode(response["SecretBinary"])
-            secret = decoded_binary_secret
-        return json.loads(secret)[key]
+            data = self.secret_cache[secret_id]
+        return data[key]
 
 
 if __name__ == "__main__":
