@@ -44,6 +44,10 @@ class EnvSecret(object):
             append_line_if_not_exists(
                 self.pysecret_script, self.export_cmd_text(var, value))
 
+    @property
+    def environ(self):
+        return os.environ
+
     def get(self, var):
         """
         Get value.
@@ -54,7 +58,10 @@ class EnvSecret(object):
         :rtype: str
         :return:
         """
-        return os.environ[var]
+        return self.environ[var]
+
+    def unset(self, var): # pragma: no cover
+        raise NotImplementedError("not implemented yet!")
 
     # -- add ``source ~/<pysecret_file>`` to bash profile file
     @property

@@ -15,7 +15,7 @@ class JsonSecret(CachedSpam):
     """
     settings_uuid_field = "secret_file"
 
-    def __real_init__(self, secret_file):
+    def __real_init__(self, secret_file=DEFAULT_JSON_SECRET_FILE):
         self.secret_file = secret_file
         create_json_if_not_exists(self.secret_file)
         with open(self.secret_file, "rb") as f:
@@ -28,3 +28,7 @@ class JsonSecret(CachedSpam):
 
     def get(self, json_path):
         return get_value(self.data, json_path)
+
+
+    def unset(self, json_path):
+        return del_key(self.data, json_path)

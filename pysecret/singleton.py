@@ -12,7 +12,7 @@ class CachedSpam(object):
     _cache = None
 
     def __init__(self, *args, **kwargs):
-        msg = "Can't instantiate directly, use {}._new(...) instead." \
+        msg = "Can't instantiate directly, use {}.new(...) instead." \
             .format(self.__class__.__name__)
         raise RuntimeError(msg)
 

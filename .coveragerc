@@ -8,6 +8,7 @@ omit =
     pysecret/docs/*
     pysecret/tests/*
     pysecret/handlers/*
+    pysecret/aws.py
 
 [report]
 # Regexes for lines to exclude from consideration

@@ -19,6 +19,14 @@ __github_username__ = "MacHu-GWU"
 try:
     from .helper import home_file_path
     from .env import EnvSecret
+    from .js import JsonSecret, DEFAULT_JSON_SECRET_FILE
+except ImportError:  # pragma: no cover
+    pass
+except Exception as e:  # pragma: no cover
+    raise e
+
+try:
+    from .aws import AWSSecret
 except ImportError:  # pragma: no cover
     pass
 except Exception as e:  # pragma: no cover
