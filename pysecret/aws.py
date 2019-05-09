@@ -6,6 +6,9 @@ import base64
 
 
 class AWSSecret(object):
+    """
+    An AWS Secret syntax simplifier class.
+    """
     def __init__(self,
                  aws_access_key_id=None,
                  aws_secret_access_key=None,
@@ -13,7 +16,7 @@ class AWSSecret(object):
                  region_name=None,
                  botocore_session=None,
                  profile_name=None):
-        ses = boto3.Session(
+        self.ses = boto3.Session(
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
             aws_session_token=aws_session_token,
@@ -21,11 +24,22 @@ class AWSSecret(object):
             botocore_session=botocore_session,
             profile_name=profile_name,
         )
-        self.kms_client = boto3.client("kms")
-        self.sm_client = ses.client("secretsmanager")
+        self.kms_client = self.ses.client("kms")
+        self.sm_client = self.ses.client("secretsmanager")
         self.secret_cache = dict()
 
     def kms_encrypt(self, kms_key_id, text):
+        """
+        Use KMS key to encrypt a short text.
+
+        :type kms_key_id: str
+        :param kms_key_id:
+
+        :type text: str
+        :param text:
+
+        :rtype: str
+        """
         return base64.b64encode(
             self.kms_client.encrypt(
                 KeyId=kms_key_id,
@@ -34,11 +48,31 @@ class AWSSecret(object):
         ).decode("utf-8")
 
     def kms_decrypt(self, text):
+        """
+        Use KMS key to decrypt a short text.
+
+        :type text: str
+        :param text: text to decrypt
+
+        :rtype: str
+        """
         return base64.b64decode(self.kms_client.decrypt(
             CiphertextBlob=base64.b64decode(text.encode("utf-8"))
         )["Plaintext"]).decode("utf-8")
 
     def get_secret_value(self, secret_id, key):
+        """
+        Fetch a specific secret value
+
+        :type secret_id: str
+        :param secret_id: aws secret id
+
+        :type key: str
+        :param key: secret value dictionary key
+
+        :rtype: str
+        :return: secret value in string
+        """
         if self.secret_cache.get(secret_id) is None:
             response = self.sm_client.get_secret_value(SecretId=secret_id)
             if "SecretString" in response:

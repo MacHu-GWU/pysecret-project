@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.3 (TODO)
+0.0.4 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,17 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.3 (2019-05-09)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+- Fix a fatal bug that boto session are not used correctly
+
+**Miscellaneous**
+
+- add more type hint
 
 
 0.0.2 (2019-04-10)
