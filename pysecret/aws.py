@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
 
+"""
+This module provides high level API for AWS Key Management Service and
+AWS Secret Manager.
+"""
+
 import json
 import boto3
 import base64
+from .js_helper import get_value
 
 
 class AWSSecret(object):
     """
     An AWS Secret syntax simplifier class.
     """
+
     def __init__(self,
                  aws_access_key_id=None,
                  aws_secret_access_key=None,
@@ -84,7 +91,45 @@ class AWSSecret(object):
             self.secret_cache[secret_id] = data
         else:
             data = self.secret_cache[secret_id]
-        return data[key]
+        return get_value(data, key)
+
+    def deploy_secret(self,
+                      name,
+                      secret_data,
+                      description=None,
+                      kms_key_id=None,
+                      tags=None):
+        """
+        Create or Update a AWS Secret.
+
+        - create_secret: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/secretsmanager.html#SecretsManager.Client.create_secret
+        - update_secret: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/secretsmanager.html#SecretsManager.Client.update_secret
+        """
+        if tags is None:
+            tags = dict()
+        Tags = [
+            {"Key": k, "Value": v}
+            for k, v in tags.items()
+        ]
+
+        create_or_update_secret_kwargs = {"SecretString": json.dumps(secret_data)}
+        if description:
+            create_or_update_secret_kwargs["Description"] = description
+        if kms_key_id:
+            create_or_update_secret_kwargs["KmsKeyId"] = kms_key_id
+        if Tags:
+            create_or_update_secret_kwargs["Tags"] = Tags
+
+        try:
+            create_or_update_secret_kwargs["Name"] = name
+            return self.sm_client.create_secret(**create_or_update_secret_kwargs)
+        except Exception as e:
+            if type(e).__name__ == "ResourceExistsException":
+                create_or_update_secret_kwargs.pop("Name")
+                create_or_update_secret_kwargs["SecretId"] = name
+                return self.sm_client.update_secret(**create_or_update_secret_kwargs)
+            else:
+                raise e
 
 
 if __name__ == "__main__":

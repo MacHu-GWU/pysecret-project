@@ -149,22 +149,57 @@ or you can just create ``$HOME/.pysecret.json`` includes:
 AWS Key Management Service and Secret Manager Integration
 ------------------------------------------------------------------------------
 
-Create a encryption key in AWS KMS, then encrypt your secret info with the key in AWS Secret Manger. Access it is easy with ``pysecret``.
+**Encrypt your secret and Read secret value using AWS Secret Manager with ``pysecret`` is super easy**.
 
-Suppose you defined a "secret" called "my-secret" in AWS Secret Manger:
+First, let's create a aws secret:
 
-- username: "myusername"
-- password: "mypassword"
+.. code-block:: python
 
+    from pysecret import AWSSecret
+
+    aws_profile = "my_aws_profile"
+    aws = AWSSecret(profile_name=aws_profile)
+
+    secret_id = "my-example-secret"
+    secret_data = dict(
+        host="www.example.com",
+        port=1234,
+        database="mydatabase",
+        username="admin",
+        password="mypassword",
+        metadata=dict(
+            creator="Alice",
+        )
+    )
+    aws.deploy_secret(name=secret_id, secret_data=secret_data)
+
+Now open your AWS Console https://console.aws.amazon.com/secretsmanager/home?region=us-east-1#/secret?name=my-example-secret (Replace us-east-1 to your region), you should be able to see the new AWS Secret has been created.
+
+Now let's retrive the secret value
+
+.. code-block:: python
+
+    >>> aws.get_secret_value(secret_id="my-example-secret", key="password")
+    mypassword
+    >>> aws.get_secret_value(secret_id="my-example-secret", key="metadata.creator")
+    Alice
+
+**Use KMS Key to encrypt and decrypt text is easy**
 
 .. code-block:: python
 
     >>> from pysecret import AWSSecret
-
     >>> aws_profile = "my_aws_profile"
+    >>> kms_key_id = "abcd1234-ab12-ab12-ab12-abcd1234abcd"
+
     >>> aws = AWSSecret(profile_name=aws_profile)
-    >>> aws.get_secret_value(secret_id="my-secret", key="password")
-    mypassword
+    >>> secret = "Hello World"
+    >>> encrypted_text = aws.kms_encrypt(kms_key_id, secret)
+    >>> decrypted_text = aws.kms_decrypt(encrypted_text)
+    >>> assert secret != encrypted_text
+    True
+    >>> assert secret == decrypted_text
+    True
 
 
 .. _install:

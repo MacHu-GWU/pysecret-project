@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.4 (TODO)
+0.0.5 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,18 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.4 (2019-10-11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add ``pysecret.AWSSecret.deploy_secret()`` method to allow developer to create and update secret easily.
+- add json path support to ``pysecret.AWSSecret.get_secret_value()``
+
+**Minor Improvements**
+
+- improved AWSSercret document.
 
 
 0.0.3 (2019-05-09)
