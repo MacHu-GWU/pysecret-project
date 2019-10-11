@@ -51,6 +51,9 @@
 Welcome to ``pysecret`` Documentation
 ==============================================================================
 
+.. contents::
+    :local:
+
 ``pysecret`` is a library to ease your life dealing with secret information.
 
 For example, **if you have a database connection information, so you can't include it in your source code, but you want to easily and securely access it**, then ``pysecret`` is the library for you. It provides several options out of the box:
