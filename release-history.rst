@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.5 (TODO)
+0.0.6 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,13 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.5 (2020-02-27)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add AWS Parameter store support
 
 
 0.0.4 (2019-10-11)

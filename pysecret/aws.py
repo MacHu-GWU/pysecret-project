@@ -15,7 +15,6 @@ class AWSSecret(object):
     """
     An AWS Secret syntax simplifier class.
     """
-
     def __init__(self,
                  aws_access_key_id=None,
                  aws_secret_access_key=None,
@@ -31,9 +30,29 @@ class AWSSecret(object):
             botocore_session=botocore_session,
             profile_name=profile_name,
         )
-        self.kms_client = self.ses.client("kms")
-        self.sm_client = self.ses.client("secretsmanager")
+        self._kms_client = None
+        self._sm_client = None
+        self._ssm_client = None
         self.secret_cache = dict()
+        self.parameter_cache = dict()
+
+    @property
+    def kms_client(self):
+        if self._kms_client is None:
+            self._kms_client = self.ses.client("kms")
+        return self._kms_client
+
+    @property
+    def sm_client(self):
+        if self._sm_client is None:
+            self._sm_client = self.ses.client("secretsmanager")
+        return self._sm_client
+
+    @property
+    def ssm_client(self):
+        if self._ssm_client is None:
+            self._ssm_client = self.ses.client("ssm")
+        return self._ssm_client
 
     def kms_encrypt(self, kms_key_id, text):
         """
@@ -122,14 +141,78 @@ class AWSSecret(object):
 
         try:
             create_or_update_secret_kwargs["Name"] = name
-            return self.sm_client.create_secret(**create_or_update_secret_kwargs)
+            response = self.sm_client.create_secret(**create_or_update_secret_kwargs)
+            self.secret_cache[name] = None
+            return response
         except Exception as e:
             if type(e).__name__ == "ResourceExistsException":
                 create_or_update_secret_kwargs.pop("Name")
                 create_or_update_secret_kwargs["SecretId"] = name
-                return self.sm_client.update_secret(**create_or_update_secret_kwargs)
+                response = self.sm_client.update_secret(**create_or_update_secret_kwargs)
+                self.secret_cache[name] = None
+                return response
             else:
                 raise e
+
+    def get_parameter_value(self, parameter_name, key):
+        """
+        Fetch a specific parameter value
+
+        :type parameter_name: str
+        :param parameter_name: aws system manager parameter name
+
+        :type key: str
+        :param key: parameter value dictionary key
+
+        :rtype: str
+        :return: parameter value in string
+        """
+        if self.parameter_cache.get(parameter_name) is None:
+            response = self.ssm_client.get_parameter(Name=parameter_name)
+            if "Parameter" in response:
+                string_value = response["Parameter"]["Value"]
+            else:
+                raise ValueError("Not a valid get_parameter response!")
+            data = json.loads(string_value)
+            self.parameter_cache[parameter_name] = data
+        else:
+            data = self.parameter_cache[parameter_name]
+        return get_value(data, key)
+
+    def deploy_parameter(self,
+                         name,
+                         parameter_data,
+                         description=None,
+                         kms_key_id=None,
+                         policies=None,
+                         tags=None):
+        if tags is None:
+            tags = dict()
+        Tags = [
+            {"Key": k, "Value": v}
+            for k, v in tags.items()
+        ]
+        put_paramters_kwargs = {
+            "Name": name,
+            "Value": json.dumps(parameter_data),
+            "Type": "String",
+            "Overwrite": True,
+            "Tier": "Intelligent-Tiering",
+        }
+        if description:
+            put_paramters_kwargs["Description"] = description
+        if kms_key_id:
+            put_paramters_kwargs["Type"] = "SecureString"
+            put_paramters_kwargs["KeyId"] = kms_key_id
+        if policies:
+            put_paramters_kwargs["Policies"] = policies
+        if Tags:
+            put_paramters_kwargs["Tags"] = Tags
+
+        response = self.ssm_client.put_parameter(**put_paramters_kwargs)
+        self.parameter_cache[name] = None
+        return response
+
 
 
 if __name__ == "__main__":
