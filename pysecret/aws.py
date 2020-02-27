@@ -5,9 +5,11 @@ This module provides high level API for AWS Key Management Service and
 AWS Secret Manager.
 """
 
-import json
-import boto3
 import base64
+import json
+
+import boto3
+
 from .js_helper import get_value
 
 
@@ -15,6 +17,7 @@ class AWSSecret(object):
     """
     An AWS Secret syntax simplifier class.
     """
+
     def __init__(self,
                  aws_access_key_id=None,
                  aws_secret_access_key=None,
@@ -212,7 +215,6 @@ class AWSSecret(object):
         response = self.ssm_client.put_parameter(**put_paramters_kwargs)
         self.parameter_cache[name] = None
         return response
-
 
 
 if __name__ == "__main__":

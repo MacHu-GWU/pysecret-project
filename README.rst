@@ -205,6 +205,42 @@ Now let's retrive the secret value
     True
 
 
+AWS System Manager Parameter Store Integration
+------------------------------------------------------------------------------
+
+**Parameter store is a Free service allows you to securely store parameters**
+
+First let's create a parameter:
+
+.. code-block:: python
+
+    from pysecret import AWSSecret
+
+    aws_profile = "my_aws_profile"
+    aws = AWSSecret(profile_name=aws_profile)
+
+
+    parameter_name = "my-example-parameter"
+    parameter_data = dict(
+        project_name="my-example-project",
+        metadata=dict(
+            creator="Sanhe",
+        ),
+    )
+
+    aws.deploy_parameter(name=parameter_name,parameter_data=parameter_data)
+
+Now open your AWS Console https://console.aws.amazon.com/systems-manager/parameters/my-example-parameter/description?region=us-east-1 (Replace us-east-1 to your region), you should be able to see the new Parameter has been created.
+
+Now let's retrive the parameter value:
+
+.. code-block:: python
+
+    # read parameter from AWS
+    assert aws.get_parameter_value(parameter_name, "project_name") == parameter_data["project_name"]
+    assert aws.get_parameter_value(parameter_name, "metadata.creator") == parameter_data["metadata"]["creator"]
+
+
 .. _install:
 
 Install
