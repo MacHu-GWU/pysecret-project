@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.6 (TODO)
+0.0.8 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,20 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.7 (2020-04-01)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- allow to load secret from json with comments.
+
+
+0.0.6 (2020-04-01)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- allow get value from KMS encrypted AWS paramter store.
 
 
 0.0.5 (2020-02-27)

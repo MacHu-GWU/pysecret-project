@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 
 
 def create_json_if_not_exists(path):  # pragma: no cover
