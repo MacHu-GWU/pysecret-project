@@ -9,8 +9,11 @@ import base64
 import json
 
 import boto3
-
-from .js_helper import get_value
+try:
+    import typing
+except:
+    pass
+from .js_helper import get_value, strip_comments
 
 
 class AWSSecret(object):
@@ -157,7 +160,10 @@ class AWSSecret(object):
             else:
                 raise e
 
-    def get_parameter_value(self, parameter_name, key):
+    def get_parameter_value(self,
+                            parameter_name,
+                            key,
+                            with_encryption=False):
         """
         Fetch a specific parameter value
 
@@ -167,11 +173,16 @@ class AWSSecret(object):
         :type key: str
         :param key: parameter value dictionary key
 
+        :type with_encryption: bool
+
         :rtype: str
         :return: parameter value in string
         """
         if self.parameter_cache.get(parameter_name) is None:
-            response = self.ssm_client.get_parameter(Name=parameter_name)
+            response = self.ssm_client.get_parameter(
+                Name=parameter_name,
+                WithDecryption=with_encryption,
+            )
             if "Parameter" in response:
                 string_value = response["Parameter"]["Value"]
             else:
@@ -189,13 +200,24 @@ class AWSSecret(object):
                          kms_key_id=None,
                          policies=None,
                          tags=None):
+        """
+        Update parameter.
+
+        :type name: str
+        :type parameter_data: dict
+        :type description: str
+        :type kms_key_id: str
+        :type policies: str
+        :type tags: dict
+        :return:
+        """
         if tags is None:
             tags = dict()
         Tags = [
             {"Key": k, "Value": v}
             for k, v in tags.items()
         ]
-        put_paramters_kwargs = {
+        put_paramter_kwargs = {
             "Name": name,
             "Value": json.dumps(parameter_data),
             "Type": "String",
@@ -203,16 +225,16 @@ class AWSSecret(object):
             "Tier": "Intelligent-Tiering",
         }
         if description:
-            put_paramters_kwargs["Description"] = description
+            put_paramter_kwargs["Description"] = description
         if kms_key_id:
-            put_paramters_kwargs["Type"] = "SecureString"
-            put_paramters_kwargs["KeyId"] = kms_key_id
+            put_paramter_kwargs["Type"] = "SecureString"
+            put_paramter_kwargs["KeyId"] = kms_key_id
         if policies:
-            put_paramters_kwargs["Policies"] = policies
+            put_paramter_kwargs["Policies"] = policies
         if Tags:
-            put_paramters_kwargs["Tags"] = Tags
+            put_paramter_kwargs["Tags"] = Tags
 
-        response = self.ssm_client.put_parameter(**put_paramters_kwargs)
+        response = self.ssm_client.put_parameter(**put_paramter_kwargs)
         self.parameter_cache[name] = None
         return response
 
