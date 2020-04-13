@@ -153,6 +153,7 @@ class AWSSecret(object):
         except Exception as e:
             if type(e).__name__ == "ResourceExistsException":
                 create_or_update_secret_kwargs.pop("Name")
+                create_or_update_secret_kwargs.pop("Tags", None)
                 create_or_update_secret_kwargs["SecretId"] = name
                 response = self.sm_client.update_secret(**create_or_update_secret_kwargs)
                 self.secret_cache[name] = None
