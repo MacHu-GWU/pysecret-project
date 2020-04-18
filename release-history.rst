@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.8 (TODO)
+0.0.9 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,14 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+0.0.8 (TODO)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Bugfixes**
+
+- ``tags`` arg should be ignored in ``pysecret.aws.AWSSecret.deploy_secret()`` method
 
 
 0.0.7 (2020-04-01)

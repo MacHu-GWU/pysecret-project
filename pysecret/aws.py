@@ -145,12 +145,12 @@ class AWSSecret(object):
         if Tags:
             create_or_update_secret_kwargs["Tags"] = Tags
 
-        try:
+        try: # create secret
             create_or_update_secret_kwargs["Name"] = name
             response = self.sm_client.create_secret(**create_or_update_secret_kwargs)
             self.secret_cache[name] = None
             return response
-        except Exception as e:
+        except Exception as e: # update secret
             if type(e).__name__ == "ResourceExistsException":
                 create_or_update_secret_kwargs.pop("Name")
                 create_or_update_secret_kwargs.pop("Tags", None)
@@ -204,13 +204,15 @@ class AWSSecret(object):
         """
         Update parameter.
 
+        - pub_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.put_parameter
+
         :type name: str
         :type parameter_data: dict
         :type description: str
         :type kms_key_id: str
         :type policies: str
         :type tags: dict
-        :return:
+        :rtype: dict
         """
         if tags is None:
             tags = dict()

@@ -11,6 +11,7 @@ aws_profile = "eq_sanhe_assume_role"
 aws_region = "us-east-1"
 aws = AWSSecret(profile_name=aws_profile, region_name=aws_region)
 
+# --- secret manager ---
 secret_id = "my-example-secret"
 secret_data = dict(
     host="www.example.com",
@@ -33,6 +34,7 @@ res = aws.deploy_secret(
 assert aws.get_secret_value(secret_id, "password") == secret_data["password"]
 assert aws.get_secret_value(secret_id, "metadata.creator") == secret_data["metadata"]["creator"]
 
+#--- parameter store
 # deploy parameter to AWS
 parameter_name = "my-example-parameter"
 parameter_data = dict(
