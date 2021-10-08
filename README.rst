@@ -52,7 +52,9 @@ Welcome to ``pysecret`` Documentation
 ==============================================================================
 
 .. contents::
+    :class: this-will-duplicate-information-and-it-is-still-useful-here
     :local:
+
 
 ``pysecret`` is a library to ease your life dealing with secret information.
 
@@ -65,7 +67,6 @@ For example, **if you have a database connection information, so you can't inclu
 3. use AWS Key Management Service or AWS Secret Manager to access your secret info.
 
 For large file or binary data encryption, I highly recommend you to use AWS Key Management Service and AWS Secret Manager to fetch your encryption key, then use `windtalker <https://pypi.org/project/windtalker/>`_ library to encrypt it.
-
 
 
 Load Data From Environment
@@ -196,13 +197,15 @@ Now let's retrive the secret value
     >>> kms_key_id = "abcd1234-ab12-ab12-ab12-abcd1234abcd"
 
     >>> aws = AWSSecret(profile_name=aws_profile)
-    >>> secret = "Hello World"
-    >>> encrypted_text = aws.kms_encrypt(kms_key_id, secret)
-    >>> decrypted_text = aws.kms_decrypt(encrypted_text)
-    >>> assert secret != encrypted_text
+    >>> secret = "Hello World".encode("utf-8)
+    >>> encrypted_blob = aws.kms_encrypt(kms_key_id, secret)
+    >>> decrypted_blob = aws.kms_decrypt(encrypted_blob)
+    >>> assert secret != encrypted_blob
     True
-    >>> assert secret == decrypted_text
+    >>> assert secret == decrypted_blob
     True
+    >>> decrypted_blob.decode("utf-8")
+    Hello World
 
 
 AWS System Manager Parameter Store Integration
@@ -224,11 +227,15 @@ First let's create a parameter:
     parameter_data = dict(
         project_name="my-example-project",
         metadata=dict(
-            creator="Sanhe",
+            creator="Alice",
         ),
     )
 
-    aws.deploy_parameter(name=parameter_name,parameter_data=parameter_data)
+    aws.deploy_parameter(
+        name=parameter_name,
+        parameter_data=parameter_data,
+        use_default_kms_key=True, # encrypt it with default kms key
+    )
 
 Now open your AWS Console https://console.aws.amazon.com/systems-manager/parameters/my-example-parameter/description?region=us-east-1 (Replace us-east-1 to your region), you should be able to see the new Parameter has been created.
 
@@ -239,6 +246,44 @@ Now let's retrive the parameter value:
     # read parameter from AWS
     assert aws.get_parameter_value(parameter_name, "project_name") == parameter_data["project_name"]
     assert aws.get_parameter_value(parameter_name, "metadata.creator") == parameter_data["metadata"]["creator"]
+
+It also **support complex parameter object TOO**, with ``attrs`` python library:
+
+.. code-block:: python
+
+    import attr
+
+    @attr.s
+    class Credential:
+        username = attr.ib()
+        password = attr.ib()
+
+    @attr.s
+    class PasswordBook:
+        amazon = attr.ib()
+        google = attr.ib()
+        facebook = attr.ib()
+
+    password_book = PasswordBook(
+        amazon=Credential("alice@amazon.com", "amazonpassword"),
+        google=Credential("alice@google.com", "googlepassword"),
+        facebook=Credential("alice@facebook.com", "facebookpassword"),
+    )
+
+    parameter_name = "my-passwordbook"
+
+    aws.deploy_parameter_object(
+        name=parameter_name,
+        parameter_obj=password_book,
+        use_default_kms_key=True, # encrypt it with default kms key
+    )
+
+Then you can read complex object from parameter store:
+
+.. code-block:: python
+
+    password_book = aws.get_parameter_object(name=parameter_name)
+    print(password_book.facebook.password) # should be "facebookpassword"
 
 
 .. _install:

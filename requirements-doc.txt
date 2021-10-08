@@ -1,16 +1,15 @@
-sphinx==1.8.1
+sphinx==3.5.4
 
 # Theme
-
-sphinx_rtd_theme
+furo==2021.6.18b36                      # sphinx-theme
 
 # Extensions
-
-sphinx-jinja        # allow jinja2 template
-sphinx-copybutton   # add copy to clipboard button for code block
-docfly>=0.0.17      # auto API manual, auto Table of Content
-rstobj>=0.0.5       # generate list table from data
+sphinx-inline-tabs==2021.3.28b7         # allow inline tab
+sphinx-jinja==1.1.0                     # allow jinja2 template
+sphinx-copybutton==0.2.5                # add copy to clipboard button for code block
+docfly==0.0.18                          # auto API manual, auto Table of Content
+rstobj==0.0.7                           # generate list table from data
 
 # Other
 
-pygments            # live RestructuredText preview
+Pygments==2.9.0                         # live RestructuredText preview

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 from superjson import json
 
 from .helper import HOME
@@ -13,7 +12,7 @@ DEFAULT_JSON_SECRET_FILE = os.path.join(HOME, ".pysecret.json")
 
 class JsonSecret(CachedSpam):
     """
-
+    Read and Write secret information from a JSON file.
     """
     settings_uuid_field = "secret_file"
 

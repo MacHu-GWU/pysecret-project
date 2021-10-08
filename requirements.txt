@@ -1,2 +1,1 @@
-click
-superjson>=0.0.13
+superjson>=1.0.1

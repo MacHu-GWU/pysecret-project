@@ -9,7 +9,6 @@ class EnvSecret(object):
     """
     Allow to load secret information from environment variable.
     """
-
     pysecret_file = ".bashrc_pysecret"
     pysecret_script = os.path.join(HOME, pysecret_file)
 

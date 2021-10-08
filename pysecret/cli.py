@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-"""Console script for pysecret."""
+"""
+Console script for pysecret.
+"""
 import sys
 import click
 
