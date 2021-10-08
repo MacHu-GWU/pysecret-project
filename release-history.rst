@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.9 (TODO)
+0.0.10 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -15,7 +15,25 @@ Release and Version History
 **Miscellaneous**
 
 
-0.0.8 (TODO)
+0.0.9 (2021-10-07)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- allow dump complex object to AWS parameter store and AWS secret manager using ``attrs`` python library
+- add three ``update_mode`` option for AWS deployment. ``create``, ``upsert``, ``try_create``.
+
+**Minor Improvements**
+
+- host doc site on readthedocs.org
+
+**Bugfixes**
+
+**Miscellaneous**
+
+- Drop Python2.7 support, only support Python3.6+
+
+
+0.0.8 (2020-04-18)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Bugfixes**
