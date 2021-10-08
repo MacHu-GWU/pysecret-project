@@ -2,8 +2,8 @@
     :target: https://pysecret.readthedocs.io/index.html
     :alt: Documentation Status
 
-.. image:: https://travis-ci.org/MacHu-GWU/pysecret-project.svg?branch=master
-    :target: https://travis-ci.org/MacHu-GWU/pysecret-project?branch=master
+.. image:: https://github.com/MacHu-GWU/pysecret-project/workflows/CI/badge.svg
+    :target: https://github.com/MacHu-GWU/pysecret-project/actions?query=workflow:CI
 
 .. image:: https://codecov.io/gh/MacHu-GWU/pysecret-project/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/MacHu-GWU/pysecret-project
