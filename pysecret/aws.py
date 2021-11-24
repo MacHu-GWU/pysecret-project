@@ -27,22 +27,23 @@ class AWSSecret(object):
     - AWS Parameter Store
     - AWS Secret Manager
     """
-
     def __init__(self,
                  aws_access_key_id=None,
                  aws_secret_access_key=None,
                  aws_session_token=None,
                  region_name=None,
-                 botocore_session=None,
+                 boto_session=None,
                  profile_name=None):
-        self.ses = boto3.Session(
-            aws_access_key_id=aws_access_key_id,
-            aws_secret_access_key=aws_secret_access_key,
-            aws_session_token=aws_session_token,
-            region_name=region_name,
-            botocore_session=botocore_session,
-            profile_name=profile_name,
-        )
+        if boto_session is None:
+            self.ses = boto3.Session(
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                aws_session_token=aws_session_token,
+                region_name=region_name,
+                profile_name=profile_name,
+            )
+        else:
+            self.ses = boto_session
         self._kms_client = None
         self._sm_client = None
         self._ssm_client = None

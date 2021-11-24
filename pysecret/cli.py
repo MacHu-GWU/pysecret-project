@@ -3,6 +3,7 @@
 """
 Console script for pysecret.
 """
+
 import sys
 import click
 
