@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-0.0.10 (TODO)
+1.0.2 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,17 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+1.0.1 (2021-11-24)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- Allow creating ``AWSSecret`` object with a pre-defined boto session object
+
+**Miscellaneous**
+
+- Stablize API
 
 
 0.0.9 (2021-10-07)
