@@ -27,13 +27,16 @@ class AWSSecret(object):
     - AWS Parameter Store
     - AWS Secret Manager
     """
-    def __init__(self,
-                 aws_access_key_id=None,
-                 aws_secret_access_key=None,
-                 aws_session_token=None,
-                 region_name=None,
-                 boto_session=None,
-                 profile_name=None):
+
+    def __init__(
+        self,
+        aws_access_key_id=None,
+        aws_secret_access_key=None,
+        aws_session_token=None,
+        region_name=None,
+        boto_session=None,
+        profile_name=None,
+    ):
         if boto_session is None:
             self.ses = boto3.Session(
                 aws_access_key_id=aws_access_key_id,
@@ -86,16 +89,18 @@ class AWSSecret(object):
     # --------------------------------------------------------------------------
     # AWS Parameter Store integration
     # --------------------------------------------------------------------------
-    def deploy_parameter(self,
-                         name,
-                         parameter_data,
-                         description=None,
-                         kms_key_id=None,
-                         use_default_kms_key=False,
-                         tier=None,
-                         policies=None,
-                         tags=None,
-                         update_mode=UpdateModeEnum.create):
+    def deploy_parameter(
+        self,
+        name,
+        parameter_data,
+        description=None,
+        kms_key_id=None,
+        use_default_kms_key=False,
+        tier=None,
+        policies=None,
+        tags=None,
+        update_mode=UpdateModeEnum.create,
+    ):
         """
         Create or Update a parameter.
 
@@ -176,9 +181,11 @@ class AWSSecret(object):
 
         return response
 
-    def get_parameter_data(self,
-                           name,
-                           with_encryption=False):
+    def get_parameter_data(
+        self,
+        name,
+        with_encryption=False,
+    ):
         """
         Get the parameter data in form of json dictionary.
 
@@ -205,10 +212,12 @@ class AWSSecret(object):
             data = self.parameter_cache[name]
         return data
 
-    def get_parameter_value(self,
-                            name,
-                            json_path,
-                            with_encryption=False):
+    def get_parameter_value(
+        self,
+        name,
+        json_path,
+        with_encryption=False,
+    ):
         """
         Fetch a specific value using json path dot notation
 
@@ -227,16 +236,18 @@ class AWSSecret(object):
         data = self.get_parameter_data(name, with_encryption)
         return get_value(data, json_path)
 
-    def deploy_parameter_object(self,
-                                name,
-                                parameter_obj,
-                                description=None,
-                                kms_key_id=None,
-                                use_default_kms_key=False,
-                                tier=None,
-                                policies=None,
-                                tags=None,
-                                update_mode=UpdateModeEnum.create):
+    def deploy_parameter_object(
+        self,
+        name,
+        parameter_obj,
+        description=None,
+        kms_key_id=None,
+        use_default_kms_key=False,
+        tier=None,
+        policies=None,
+        tags=None,
+        update_mode=UpdateModeEnum.create,
+    ):
         """
         Deploy a parameter object implemented using attrs library https://pypi.org/project/attrs/
         to AWS parameter store. It use jsonpickle https://pypi.org/project/attrs/
@@ -276,9 +287,11 @@ class AWSSecret(object):
             update_mode=update_mode,
         )
 
-    def get_parameter_object(self,
-                             name,
-                             with_encryption=False):
+    def get_parameter_object(
+        self,
+        name,
+        with_encryption=False,
+    ):
         import jsonpickle
         data = self.get_parameter_data(
             name=name,
@@ -286,10 +299,20 @@ class AWSSecret(object):
         )
         return jsonpickle.loads(data[JSON_PICKLE_KEY])
 
+    def delete_parameter(
+        self,
+        name: str,
+    ) -> dict:  # pragma: no cover
+        return self.ssm_client.delete_parameter(Name=name)
+
     # --------------------------------------------------------------------------
     # AWS Key Management Service integration
     # --------------------------------------------------------------------------
-    def kms_symmetric_encrypt(self, blob, kms_key_id):
+    def kms_symmetric_encrypt(
+        self,
+        blob,
+        kms_key_id,
+    ):
         """
         Use KMS key to encrypt a short text.
 
@@ -322,13 +345,15 @@ class AWSSecret(object):
     # --------------------------------------------------------------------------
     # AWS Secret Manager integration
     # --------------------------------------------------------------------------
-    def deploy_secret(self,
-                      name,
-                      secret_data,
-                      description=None,
-                      kms_key_id=None,
-                      tags=None,
-                      update_mode=UpdateModeEnum.create):
+    def deploy_secret(
+        self,
+        name,
+        secret_data,
+        description=None,
+        kms_key_id=None,
+        tags=None,
+        update_mode=UpdateModeEnum.create,
+    ):
         """
         Create or Update a AWS Secret.
 
@@ -430,13 +455,15 @@ class AWSSecret(object):
         data = self.get_secret_data(secret_id)
         return get_value(data, json_path)
 
-    def deploy_secret_object(self,
-                             name,
-                             secret_obj,
-                             description=None,
-                             kms_key_id=None,
-                             tags=None,
-                             update_mode=UpdateModeEnum.create):
+    def deploy_secret_object(
+        self,
+        name,
+        secret_obj,
+        description=None,
+        kms_key_id=None,
+        tags=None,
+        update_mode=UpdateModeEnum.create,
+    ):
         """
         Deploy a secret object implemented using attrs library https://pypi.org/project/attrs/
         to AWS Secret Manager. It use jsonpickle https://pypi.org/project/attrs/
@@ -472,3 +499,15 @@ class AWSSecret(object):
         import jsonpickle
         data = self.get_secret_data(secret_id)
         return jsonpickle.loads(data[JSON_PICKLE_KEY])
+
+    def delete_secret(
+        self,
+        secret_id: str,
+        recovery_window_in_days=30,
+        force_delete_without_recovery=False,
+    ) -> dict:  # pragma: no cover
+        return self.sm_client.delete_secret(
+            SecretId=secret_id,
+            RecoveryWindowInDays=recovery_window_in_days,
+            force_delete_without_recovery=force_delete_without_recovery,
+        )

@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.0.2 (TODO)
+1.0.3 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,18 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+1.0.2 (2022-03-26)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add :meth:`pysecret.aws.AWSSecret.delete_parameter`` method
+- add :meth:`pysecret.aws.AWSSecret.delete_secret`` method
+
+**Miscellaneous**
+
+- update ``readthedocs.yml``
 
 
 1.0.1 (2021-11-24)
