@@ -88,7 +88,7 @@ language = None
 exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = "sphinx"
+pygments_style = "monokai"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -106,7 +106,6 @@ html_theme = "furo"
 
 html_theme_options = {
     "sidebar_hide_name": False,
-    "dark_logo": "pysecret-logo.png",
 }
 pygments_dark_style = "monokai"
 
@@ -225,8 +224,3 @@ docfly.ApiReferenceDoc(
         "%s.tests" % package_name,
         ]
 ).fly()
-
-
-def setup(app):
-    app.add_stylesheet('css/custom-style.css')
-    app.add_javascript('js/sorttable.js')
