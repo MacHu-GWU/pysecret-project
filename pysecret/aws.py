@@ -181,6 +181,31 @@ class AWSSecret(object):
 
         return response
 
+    def get_parameter_raw_value(
+        self,
+        name,
+        with_encryption=False,
+    ):
+        """
+        Get the raw parameter data in form of string.
+
+        :type name: str
+        :param name: aws system manager parameter name
+
+        :type with_encryption: bool
+        :param with_encryption: use True if it is a secure string type parameter
+
+        :rtype: str
+        """
+        response = self.ssm_client.get_parameter(
+            Name=name,
+            WithDecryption=with_encryption,
+        )
+        if "Parameter" in response:
+            return response["Parameter"]["Value"]
+        else:  # pragma: no cover
+            raise ValueError("Not a valid get_parameter response!")
+
     def get_parameter_data(
         self,
         name,
@@ -204,7 +229,7 @@ class AWSSecret(object):
             )
             if "Parameter" in response:
                 string_value = response["Parameter"]["Value"]
-            else:
+            else:  # pragma: no cover
                 raise ValueError("Not a valid get_parameter response!")
             data = json.loads(strip_comments(string_value))
             self.parameter_cache[name] = data
@@ -417,6 +442,20 @@ class AWSSecret(object):
             else:
                 raise e
 
+    def get_secret_raw_value(self, secret_id):
+        """
+        Get the raw secret data in form of string or binary.
+
+        :type secret_id: str
+
+        :rtype: typing.Union[str, bytes]
+        """
+        response = self.sm_client.get_secret_value(SecretId=secret_id)
+        if "SecretString" in response:
+            return response["SecretString"]
+        else:
+            return base64.b64decode(response["SecretBinary"])
+
     def get_secret_data(self, secret_id):
         """
         Get the secret data in form of json dictionary.
@@ -435,7 +474,7 @@ class AWSSecret(object):
                 secret = response["SecretString"]
             else:
                 decoded_binary_secret = base64.b64decode(response["SecretBinary"])
-                secret = decoded_binary_secret
+                secret = decoded_binary_secret.decode("utf-8")
             data = json.loads(strip_comments(secret))
             self.secret_cache[secret_id] = data
         else:

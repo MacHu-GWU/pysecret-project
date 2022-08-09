@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.0.3 (TODO)
+1.0.4 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,14 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+1.0.3 (2022-08-09)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add :meth:`pysecret.aws.AWSSecret.get_parameter_raw_value`` method
+- add :meth:`pysecret.aws.AWSSecret.get_secret_raw_value`` method
 
 
 1.0.2 (2022-03-26)

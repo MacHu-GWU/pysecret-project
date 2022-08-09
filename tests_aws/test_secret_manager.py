@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import json
 import attr
 import pytest
 from pytest import raises
@@ -60,6 +61,7 @@ def test_json_path_and_encryption():
     # read secret from AWS
     assert aws.get_secret_value(secret_id, "password") == secret_data["password"]
     assert aws.get_secret_value(secret_id, "metadata.creator") == secret_data["metadata"]["creator"]
+    json.loads(aws.get_secret_raw_value(secret_id))
 
 
 def test_update_mode():

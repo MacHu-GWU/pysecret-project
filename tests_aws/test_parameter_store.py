@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import json
 import attr
 import pytest
 from pytest import raises
@@ -59,6 +60,7 @@ def test_json_path_and_encryption():
     assert aws.get_parameter_value(param_name, "project_name", with_encryption=True) == parameter_data["project_name"]
     assert aws.get_parameter_value(param_name, "metadata.creator", with_encryption=True) == parameter_data["metadata"][
         "creator"]
+    json.loads(aws.get_parameter_raw_value(param_name, with_encryption=True))
 
 
 def test_update_mode():
