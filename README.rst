@@ -23,7 +23,7 @@
 ------
 
 
-.. image:: https://img.shields.io/badge/Link-Document-blue.svg
+.. image:: https://img.shields.io/badge/Link-Document-green.svg
       :target: https://pysecret.readthedocs.io/index.html
 
 .. image:: https://img.shields.io/badge/Link-API-blue.svg
