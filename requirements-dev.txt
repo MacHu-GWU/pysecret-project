@@ -2,5 +2,4 @@ pathlib_mate    # autopep8 your code
 twine           # make distribution archive
 
 boto3
-attrs
 jsonpickle
