@@ -4,11 +4,10 @@
 omit =
     pysecret/_version.py
     pysecret/cli.py
-    pysecret/pkg/*
     pysecret/docs/*
     pysecret/tests/*
-    pysecret/handlers/*
-    pysecret/aws.py
+    pysecret/aws/*
+    pysecret/compat.py
 
 [report]
 # Regexes for lines to exclude from consideration
