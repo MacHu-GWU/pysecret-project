@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 
+"""
+Shell script variable support. Read and write syntax like ``export key="value"``
+in shell script.
+"""
+
 import os
 import re
+
 
 export_pattern = re.compile('export [a-zA-Z0-9_]{1,128}="[a-zA-Z0-9_]{1,128}"')
 """Limitation, key, value length can't be greater than 128. 
 """
 
 
-def append_line_if_not_exists(path, line):
+def append_line_if_not_exists(path: str, line: str):
     """
     Append a line to a text file at `path` if the line not exists in its content.
 
-    :type path: str
     :param path: text file absolute path
-
-    :type path: str
     :param line: text string.
 
     :return: None
@@ -31,8 +34,7 @@ def append_line_if_not_exists(path, line):
     striped_line = line.strip()
     with open(path, "rb") as f:
         content = f.read().decode("utf-8")
-        flag_endswith_new_line = content.endswith(
-            "\n") or content.endswith("\n\r")
+        flag_endswith_new_line = content.endswith("\n") or content.endswith("\n\r")
         for line_ in content.split("\n"):
             if striped_line in line_:
                 return
@@ -44,15 +46,13 @@ def append_line_if_not_exists(path, line):
             f.write(("\n" + line + "\n").encode("utf-8"))
 
 
-def load_var_value_from_shell_script_content(content):
+def load_var_value_from_shell_script_content(content: str) -> dict:
     """
     Extract variable definition such as ``export var="value"`` from shell script
     content text.
 
-    :type content: str
     :param content: text content of a shell script
 
-    :rtype: dict
     :return:
     """
     # find possible text token
@@ -75,9 +75,16 @@ def load_var_value_from_shell_script_content(content):
     return results
 
 
-def load_var_value_from_shell_script(shell_scripts):
-    if not os.path.exists(shell_scripts):
+def load_var_value_from_shell_script(path_shell_script: str) -> dict:
+    """
+    Extract ``export key="value"`` key value data from a shell script.
+
+    :param path_shell_script: shell script absolute path
+
+    :return: key value pair dictionary data
+    """
+    if not os.path.exists(path_shell_script):
         return {}
-    with open(shell_scripts, "rb") as f:
+    with open(path_shell_script, "rb") as f:
         content = f.read().decode("utf-8")
         return load_var_value_from_shell_script_content(content)
