@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
 from pysecret.js_helper import (
     create_json_if_not_exists,
     set_value,
     get_value,
     del_key,
 )
+from pysecret.tests import run_cov_test, dir_tests
 
-path_json = Path(__file__).absolute().parent.joinpath("test.json")
+path_json = dir_tests.joinpath("test.json")
 
 
 def test_create_json_if_not_exists():
@@ -31,12 +31,14 @@ def test_create_json_if_not_exists():
 def test_set_value_del_key():
     data = {}
 
-    set_value(data, "meta", "profile")
+    res = set_value(data, "meta", "profile")
     assert data == {"meta": "profile"}
+    assert res == {"meta": "profile"}
 
     set_value(data, "alice.name", "Alice")
-    set_value(data, ".alice.dob", "2000-01-01")
+    res = set_value(data, ".alice.dob", "2000-01-01")
     assert data == {"meta": "profile", "alice": {"name": "Alice", "dob": "2000-01-01"}}
+    assert res == {"meta": "profile", "alice": {"name": "Alice", "dob": "2000-01-01"}}
     assert get_value(data, "alice.name") == "Alice"
     assert get_value(data, ".alice.dob") == "2000-01-01"
     assert get_value(data, ".") == {
@@ -55,6 +57,4 @@ def test_set_value_del_key():
 
 
 if __name__ == "__main__":
-    from pysecret.tests import run_cov_test
-
     run_cov_test(__file__, "pysecret.js_helper", preview=False)

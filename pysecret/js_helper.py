@@ -38,12 +38,13 @@ def set_value(
 
     paths = json_path.split(".")
     path_length = len(paths)
+    dct = data
     for ind, key in enumerate(paths):
         if ind == (path_length - 1):
-            data[key] = value
+            dct[key] = value
         else:
-            data.setdefault(key, {})
-            data = data[key]
+            dct.setdefault(key, {})
+            dct = dct[key]
     return data
 
 

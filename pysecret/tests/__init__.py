@@ -2,6 +2,7 @@
 
 import sys
 from .covtest import run_cov_test
+from .paths import dir_tests
 
 py_ver = f"{sys.version_info.major}{sys.version_info.minor}"
 
