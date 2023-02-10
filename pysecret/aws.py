@@ -89,6 +89,17 @@ class AWSSecret(object):
     # --------------------------------------------------------------------------
     # AWS Parameter Store integration
     # --------------------------------------------------------------------------
+    def _put_parameter(self, parameter_name, put_parameter_kwargs):
+        """
+        :type parameter_name: str
+        :type put_parameter_kwargs: dict
+
+        :rtype: dict
+        """
+        response = self.ssm_client.put_parameter(**put_parameter_kwargs)
+        self.parameter_cache[parameter_name] = None  # reset cache if upsert success
+        return response
+
     def deploy_parameter(
         self,
         name,
@@ -100,6 +111,7 @@ class AWSSecret(object):
         policies=None,
         tags=None,
         update_mode=UpdateModeEnum.create,
+        skip_duplicate=True,
     ):
         """
         Create or Update a parameter.
@@ -117,23 +129,23 @@ class AWSSecret(object):
         :type policies: str
         :type tags: typing.Dict[str, str]
         :type update_mode: int
+        :type skip_duplicate: bool
 
         :rtype: dict
 
         Update mode:
 
         1. create: create new parameter, raise error if already exists
-        2. upsert: create new parameter, overwrite existing one if exists
-        3. try create: create new parameter, silently do nothing if already exists
+        2. upsert: create new parameter, overwrite existing one if already exists,
+            if skip_duplicate is True, then won't do deployment if parameter data
+            not changed
+        3. try_create: create new parameter, silently do nothing if already exists
 
         update mode code can be accessed from ``AWSSecret.UpdateModeEnum``
         """
         if tags is None:
             tags = dict()
-        Tags = [
-            {"Key": k, "Value": v}
-            for k, v in tags.items()
-        ]
+        Tags = [{"Key": k, "Value": v} for k, v in tags.items()]
 
         put_parameter_kwargs = {
             "Name": name,
@@ -144,8 +156,9 @@ class AWSSecret(object):
         if description is not None:
             put_parameter_kwargs["Description"] = description
         if (use_default_kms_key is True) and (kms_key_id is not None):
-            msg = ("you cannot set `use_default_kms_key` and "
-                   "`kms_key_id` at same time!")
+            msg = (
+                "you cannot set `use_default_kms_key` and " "`kms_key_id` at same time!"
+            )
             raise ValueError(msg)
         if use_default_kms_key:
             kms_key_id = self.KMSArgValueEnum.KeyId.aws_ssm
@@ -161,16 +174,38 @@ class AWSSecret(object):
 
         if update_mode == self.UpdateModeEnum.create:
             put_parameter_kwargs["Overwrite"] = False
-            response = self.ssm_client.put_parameter(**put_parameter_kwargs)
-            self.parameter_cache[name] = None  # reset cache if upsert success
+            return self._put_parameter(name, put_parameter_kwargs)
         elif update_mode == self.UpdateModeEnum.upsert:
             put_parameter_kwargs["Overwrite"] = True
-            response = self.ssm_client.put_parameter(**put_parameter_kwargs)
-            self.parameter_cache[name] = None  # reset cache if upsert success
+            if skip_duplicate:
+                try:
+                    if (kms_key_id is not None) or (use_default_kms_key is True):
+                        with_encryption = True
+                    else:
+                        with_encryption = False
+                    response = self.ssm_client.get_parameter(
+                        Name=name,
+                        WithDecryption=with_encryption,
+                    )
+                    if "Parameter" in response:
+                        string_value = response["Parameter"]["Value"]
+                    else:  # pragma: no cover
+                        raise ValueError("Not a valid get_parameter response!")
+                    data = json.loads(strip_comments(string_value))
+                    if parameter_data == data:  # duplicate parameter data
+                        return {}
+                    else:
+                        return self._put_parameter(name, put_parameter_kwargs)
+                except Exception as e:
+                    if "ParameterNotFound" in str(e):
+                        return self._put_parameter(name, put_parameter_kwargs)
+                    else:
+                        raise e
+            else:
+                return self._put_parameter(name, put_parameter_kwargs)
         elif update_mode == self.UpdateModeEnum.try_create:
             try:
-                response = self.ssm_client.put_parameter(**put_parameter_kwargs)
-                self.parameter_cache[name] = None  # reset cache if upsert success
+                return self._put_parameter(name, put_parameter_kwargs)
             except Exception as e:
                 if "exists" in str(e).lower():
                     return {}
@@ -178,8 +213,6 @@ class AWSSecret(object):
                     raise e
         else:
             raise ValueError("{} is not a valid update_mode code".format(update_mode))
-
-        return response
 
     def get_parameter_raw_value(
         self,
@@ -272,6 +305,7 @@ class AWSSecret(object):
         policies=None,
         tags=None,
         update_mode=UpdateModeEnum.create,
+        skip_duplicate=True,
     ):
         """
         Deploy a parameter object implemented using attrs library https://pypi.org/project/attrs/
@@ -289,16 +323,20 @@ class AWSSecret(object):
         :type policies: str
         :type tags: typing.Dict[str, str]
         :type update_mode: int
+        :type skip_duplicate: bool
 
         :rtype: dict
 
         Update mode:
 
         1. create: create new parameter, raise error if already exists
-        2. upsert: create new parameter, overwrite existing one if exists
-        3. try create: create new parameter, silently do nothing if already exists
+        2. upsert: create new parameter, overwrite existing one if already exists,
+            if skip_duplicate is True, then won't do deployment if parameter data
+            not changed
+        3. try_create: create new parameter, silently do nothing if already exists
         """
         import jsonpickle
+
         parameter_data = {JSON_PICKLE_KEY: jsonpickle.dumps(parameter_obj)}
         return self.deploy_parameter(
             name=name,
@@ -310,6 +348,7 @@ class AWSSecret(object):
             policies=policies,
             tags=tags,
             update_mode=update_mode,
+            skip_duplicate=skip_duplicate,
         )
 
     def get_parameter_object(
@@ -318,6 +357,7 @@ class AWSSecret(object):
         with_encryption=False,
     ):
         import jsonpickle
+
         data = self.get_parameter_data(
             name=name,
             with_encryption=with_encryption,
@@ -404,10 +444,7 @@ class AWSSecret(object):
         """
         if tags is None:
             tags = dict()
-        Tags = [
-            {"Key": k, "Value": v}
-            for k, v in tags.items()
-        ]
+        Tags = [{"Key": k, "Value": v} for k, v in tags.items()]
 
         create_or_update_secret_kwargs = {"SecretString": json.dumps(secret_data)}
         if description:
@@ -431,14 +468,20 @@ class AWSSecret(object):
                     create_or_update_secret_kwargs["SecretId"] = name
                     create_or_update_secret_kwargs.pop("Tags", None)
                     if len(tags):
-                        print("ignore tags because you cannot update tag in `update_secret` API")
-                    response = self.sm_client.update_secret(**create_or_update_secret_kwargs)
+                        print(
+                            "ignore tags because you cannot update tag in `update_secret` API"
+                        )
+                    response = self.sm_client.update_secret(
+                        **create_or_update_secret_kwargs
+                    )
                     self.secret_cache[name] = None
                     return response
                 elif update_mode == self.UpdateModeEnum.try_create:
                     return {}
                 else:
-                    raise ValueError("{} is not a valid update_mode code".format(update_mode))
+                    raise ValueError(
+                        "{} is not a valid update_mode code".format(update_mode)
+                    )
             else:
                 raise e
 
@@ -524,6 +567,7 @@ class AWSSecret(object):
         3. try create: create new parameter, silently do nothing if already exists
         """
         import jsonpickle
+
         secret_data = {JSON_PICKLE_KEY: jsonpickle.dumps(secret_obj)}
         return self.deploy_secret(
             name=name,
@@ -536,6 +580,7 @@ class AWSSecret(object):
 
     def get_secret_object(self, secret_id):
         import jsonpickle
+
         data = self.get_secret_data(secret_id)
         return jsonpickle.loads(data[JSON_PICKLE_KEY])
 

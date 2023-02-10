@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.0.4 (TODO)
+1.1.1 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,13 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+1.0.4 (2022-08-09)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- :meth:`pysecret.aws.AWSSecret.deploy_parameter`` and :meth:`pysecret.aws.AWSSecret.deploy_parameter_object`` now support ``skip_duplicate`` argument, so it won't deploy a new version when the content of the parameter is the same.
 
 
 1.0.3 (2022-08-09)
@@ -43,7 +50,7 @@ Release and Version History
 
 **Miscellaneous**
 
-- Stablize API
+- Stabilize API
 
 
 0.0.9 (2021-10-07)

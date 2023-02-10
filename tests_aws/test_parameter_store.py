@@ -34,8 +34,7 @@ def teardown_module(module):
         "pysecret_test_deploy_parameter_obj",
     ]
     param_name_list = [
-        "{}_{}".format(py_ver, param_name)
-        for param_name in param_name_list
+        "{}_{}".format(py_ver, param_name) for param_name in param_name_list
     ]
     aws.ssm_client.delete_parameters(Names=param_name_list)
 
@@ -57,20 +56,26 @@ def test_json_path_and_encryption():
     )
 
     # read parameter from AWS
-    assert aws.get_parameter_value(param_name, "project_name", with_encryption=True) == parameter_data["project_name"]
-    assert aws.get_parameter_value(param_name, "metadata.creator", with_encryption=True) == parameter_data["metadata"][
-        "creator"]
+    assert (
+        aws.get_parameter_value(param_name, "project_name", with_encryption=True)
+        == parameter_data["project_name"]
+    )
+    assert (
+        aws.get_parameter_value(param_name, "metadata.creator", with_encryption=True)
+        == parameter_data["metadata"]["creator"]
+    )
     json.loads(aws.get_parameter_raw_value(param_name, with_encryption=True))
 
 
 def test_update_mode():
     param_name = "{}_pysecret_test_update_mode".format(py_ver)
     param_data = {"name": "alice"}
-    aws.deploy_parameter(
+    response = aws.deploy_parameter(
         name=param_name,
         parameter_data=param_data,
         update_mode=AWSSecret.UpdateModeEnum.try_create,
     )
+    assert "Version" in response
 
     with raises(Exception):
         aws.deploy_parameter(
@@ -80,12 +85,20 @@ def test_update_mode():
         )
 
     param_data = {"name": "Bob"}
-    aws.deploy_parameter(
+    response = aws.deploy_parameter(
         name=param_name,
         parameter_data=param_data,
         update_mode=AWSSecret.UpdateModeEnum.upsert,
     )
+    assert "Version" in response
     assert aws.get_parameter_value(param_name, "name") == "Bob"
+
+    response = aws.deploy_parameter(
+        name=param_name,
+        parameter_data=param_data,
+        update_mode=AWSSecret.UpdateModeEnum.upsert,
+    )
+    assert response == {}
 
     param_data = {"name": "Cathy"}
     aws.deploy_parameter(
@@ -105,11 +118,13 @@ def test_deploy_parameter_obj():
             prod=EnvConfig(db_password="prod_pwd"),
         )
     )
-    aws.deploy_parameter_object(
+
+    response = aws.deploy_parameter_object(
         name=param_name,
         parameter_obj=config,
         update_mode=AWSSecret.UpdateModeEnum.try_create,
     )
+    assert "Version" in response
 
     obj = aws.get_parameter_object(name=param_name)
     assert isinstance(obj, Config)
@@ -117,6 +132,17 @@ def test_deploy_parameter_obj():
     assert isinstance(obj.stages.dev, EnvConfig)
 
     assert obj.stages.dev.db_password == "dev_pwd"
+
+    jsonpickle_content = aws.get_parameter_raw_value(param_name, with_encryption=True)
+    assert "dev_pwd" in jsonpickle_content
+    assert "prod_pwd" in jsonpickle_content
+
+    response = aws.deploy_parameter_object(
+        name=param_name,
+        parameter_obj=config,
+        update_mode=AWSSecret.UpdateModeEnum.upsert,
+    )
+    assert response == {}
 
 
 if __name__ == "__main__":
