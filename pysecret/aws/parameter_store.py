@@ -209,6 +209,11 @@ def deploy_parameter(
 
     - put_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.put_parameter
 
+    Note:
+
+        - you cannot change tags when overwriting parameter, you have to call
+            ``add_tags_to_resource`` API after overwriting.
+
     :param ssm_client: boto3 system manager client
     :param name: the parameter name
     :param data: the parameter data, could be one of the following:
@@ -347,9 +352,7 @@ def deploy_parameter(
     # tag
     if tags is None:
         tags = dict()
-    Tags = [{"Key": k, "Value": v} for k, v in tags.items()]
-    if len(Tags):
-        put_parameter_kwargs["Tags"] = Tags
+    tags_ = [{"Key": k, "Value": v} for k, v in tags.items()]
 
     # overwrite
     if overwrite:
@@ -368,6 +371,8 @@ def deploy_parameter(
         )
         # if not exists, do create
         if parameter is None:
+            if len(tags_):
+                put_parameter_kwargs["Tags"] = tags_
             response = ssm_client.put_parameter(**put_parameter_kwargs)
             return Parameter._from_put_parameter_response(
                 put_parameter_kwargs, response
@@ -380,12 +385,24 @@ def deploy_parameter(
             # if not same, do update
             else:
                 response = ssm_client.put_parameter(**put_parameter_kwargs)
+                if len(tags_):
+                    ssm_client.add_tags_to_resource(
+                        ResourceType="Parameter",
+                        ResourceId=name,
+                        Tags=tags_,
+                    )
                 return Parameter._from_put_parameter_response(
                     put_parameter_kwargs, response
                 )
     # don't duplication check, just update
     else:
         response = ssm_client.put_parameter(**put_parameter_kwargs)
+        if len(tags_):
+            ssm_client.add_tags_to_resource(
+                ResourceType="Parameter",
+                ResourceId=name,
+                Tags=tags_,
+            )
         return Parameter._from_put_parameter_response(put_parameter_kwargs, response)
 
 
