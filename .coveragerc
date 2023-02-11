@@ -8,6 +8,8 @@ omit =
     pysecret/tests/*
     pysecret/aws/*
     pysecret/compat.py
+    pysecret/env.py
+    pysecret/sh.py
 
 [report]
 # Regexes for lines to exclude from consideration

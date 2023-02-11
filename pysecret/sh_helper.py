@@ -9,7 +9,7 @@ import os
 import re
 
 
-export_pattern = re.compile('export [a-zA-Z0-9_]{1,128}="[a-zA-Z0-9_]{1,128}"')
+export_pattern = re.compile('export [a-zA-Z0-9_]{1,128}="[\d\D]{1,128}"')
 """Limitation, key, value length can't be greater than 128. 
 """
 
