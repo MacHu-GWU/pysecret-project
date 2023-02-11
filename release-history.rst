@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-1.1.1 (TODO)
+2.2.1 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -15,7 +15,32 @@ Release and Version History
 **Miscellaneous**
 
 
-1.0.4 (2022-08-09)
+2.1.1 (2023-02-11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Breaking Change**
+
+- Redesigned the api. 2.X will not compatible to 1.X at all
+
+**Features and Improvements**
+
+- Below is the list of stabled API for 2.X:
+    - ``pysecret.BaseEnvVar``: manage secrets in environment variables
+    - ``pysecret.AWSEnvVar``: manage AWS CLI related secrets in environment variables
+    - ``pysecret.JsonSecret``: manage secrets in JSON file
+    - ``pysecret.BaseShellScriptSecret``: manage secrets in shell script
+    - ``pysecret.Parameter``: manage secrets in AWS Parameter Store
+    - ``pysecret.deploy_parameter``: manage secrets in AWS Parameter Store
+    - ``pysecret.delete_parameter``: manage secrets in AWS Parameter Store
+    - ``pysecret.Secret``: manage secrets in AWS Secret Manager
+    - ``pysecret.deploy_secret``: manage secrets in AWS Secret Manager
+    - ``pysecret.delete_secret``: manage secrets in AWS Secret Manager
+
+**Minor Improvements**
+
+- add jupyter notebook examples.
+
+
+1.0.4 (2023-02-10)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
