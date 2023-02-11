@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+"""
+AWS Parameter Store support.
+"""
+
 import typing as T
 import json
 import enum
@@ -42,6 +46,16 @@ class ParameterDataTypeEnum(str, enum.Enum):
 
 @dataclasses.dataclass
 class Parameter:
+    """
+    AWS System Manager Parameter object.
+
+    - The camel case attributes are raw value from AWS API.
+    - The snake case attributes are user-friendly accessor to the data.
+    - if you know what data type to expect in the parameter, please use
+        :meth:`Parameter.string`, :meth:`Parameter.string_list`,
+        :meth:`Parameter.json_dict`, :meth:`Parameter.json_list`,
+        :meth:`Parameter.py_object` to access the data.
+    """
     Name: str = dataclasses.field()
     Type: str = dataclasses.field()
     Value: str = dataclasses.field()
@@ -60,6 +74,8 @@ class Parameter:
         with_decryption: T.Optional[bool] = None,
     ) -> T.Optional["Parameter"]:
         """
+        Load parameter data.
+
         Ref:
 
         - get_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.get_parameter
@@ -118,16 +134,32 @@ class Parameter:
             DataType="text",
         )
 
+    @property
+    def string(self) -> str:
+        """
+        The string user data.
+        """
+        return self.Value
+
     @cached_property
     def string_list(self) -> T.List[str]:
+        """
+        The python string list user data.
+        """
         return self.Value.split(",")
 
     @cached_property
     def json_dict(self) -> dict:
+        """
+        The python dict user data.
+        """
         return json.loads(strip_comments(self.Value))
 
     @cached_property
     def json_list(self) -> list:
+        """
+        The python list user data.
+        """
         return json.loads(strip_comments(self.Value))
 
     @cached_property
@@ -178,23 +210,33 @@ def deploy_parameter(
     - put_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.put_parameter
 
     :param ssm_client: boto3 system manager client
-    :param name:
-    :param data:
-    :param description:
-    :param kms_key_id:
+    :param name: the parameter name
+    :param data: the parameter data, could be one of the following:
+        - a string
+        - a list of string
+        - a list of object
+        - a dict object
+        - arbitrary jsonpicklible python object
+    :param description: description of the parameter
+    :param type_is_string: is it String type?
+    :param type_is_string_list: is it StringList type?
+    :param type_is_secure_string: is it SecureString type?
+    :param kms_key_id: user defined KMS key id for encryption
     :param use_default_kms_key: if true, then you can omit the ``kms_key_id``
         field, and it will use the default ``alias/aws/ssm`` kms key to encrypt
         your data, and the type become Se
-    :param tier:
-    :param policies:
-    :param tags:
-    :param overwrite:
+    :param tier_is_standard: is this standard tier?
+    :param tier_is_advanced: is this advanced tier?
+    :param tier_is_intelligent: is this intelligent tier?
+    :param policies: access policy
+    :param tags: aws resource tags in python dict
+    :param overwrite: if False, then raise error when overwriting an existing parameter
     :param skip_if_duplicated: if True, then won't do deployment if parameter data
         is the same as the one in the latest version.
 
-    :rtype: dict
+    :return: None or an :class:`Parameter` object, None means that the deployment
+        doesn't happen.
     """
-
     # --------------------------------------------------------------------------
     # input argument pre processing
     # --------------------------------------------------------------------------
@@ -352,6 +394,8 @@ def delete_parameter(
     name: str,
 ) -> bool:
     """
+    Delete a Parameter.
+
     Ref:
 
     - delete_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.delete_parameter

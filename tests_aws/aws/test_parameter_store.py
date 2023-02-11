@@ -6,13 +6,10 @@ import dataclasses
 from pysecret.tests import bsm, py_ver, run_cov_test
 from pysecret.aws.parameter_store import (
     ParameterTypeEnum,
-    ParameterTierEnum,
-    ParameterDataTypeEnum,
     Parameter,
     deploy_parameter,
     delete_parameter,
 )
-from rich import print as rprint
 
 
 def delete_all():
@@ -31,8 +28,8 @@ def setup_module(module):
     delete_all()
 
 
-# def teardown_module(module):
-#     delete_all()
+def teardown_module(module):
+    delete_all()
 
 STRING = "attach on 4 AM!"
 DATA = {"name": "Alice"}
@@ -101,6 +98,7 @@ class TestParameter:
             tags=dict(EnvName="prod"),
         )
         assert param.Value == STRING
+        assert param.string == STRING
 
         param = Parameter.load(bsm.ssm_client, name=self.param_name_string)
         assert param.Value == STRING
@@ -231,7 +229,7 @@ class TestParameter:
 
     def test_deploy_parameter_skip_duplicate(self):
         # first deployment
-        deploy_parameter(
+        param = deploy_parameter(
             bsm.ssm_client,
             name=self.param_name_string,
             data=DATA,
@@ -239,11 +237,14 @@ class TestParameter:
             tier_is_standard=True,
             overwrite=True,
         )
+        _version = param.Version
+
         param = Parameter.load(bsm.ssm_client, self.param_name_string)
         version = param.Version # store the first deployment version
+        assert version == _version
 
         # second deployment, since the data is not changed, no deployment happen
-        deploy_parameter(
+        param = deploy_parameter(
             bsm.ssm_client,
             name=self.param_name_string,
             data=DATA,
@@ -252,11 +253,13 @@ class TestParameter:
             overwrite=True,
             skip_if_duplicated=True,
         )
+        assert param is None
+
         param = Parameter.load(bsm.ssm_client, self.param_name_string)
         assert param.Version == version
 
         # third deployment, we set skip_if_duplicated = False, so version + 1
-        deploy_parameter(
+        param = deploy_parameter(
             bsm.ssm_client,
             name=self.param_name_string,
             data=DATA,
@@ -265,11 +268,13 @@ class TestParameter:
             overwrite=True,
             skip_if_duplicated=False,
         )
+        assert param.Version == version + 1
+
         param = Parameter.load(bsm.ssm_client, self.param_name_string)
         assert param.Version == version + 1
 
         # fourth deployment, since the data is changed, so version + 1
-        deploy_parameter(
+        param = deploy_parameter(
             bsm.ssm_client,
             name=self.param_name_string,
             data={"key": "a new value"},
@@ -278,6 +283,8 @@ class TestParameter:
             overwrite=True,
             skip_if_duplicated=True,
         )
+        assert param.Version == version + 2
+
         param = Parameter.load(bsm.ssm_client, self.param_name_string)
         assert param.Version == version + 2
 
