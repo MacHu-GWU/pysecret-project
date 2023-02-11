@@ -2,6 +2,3 @@
 pytest              # test framework
 pytest-cov          # coverage test
 
-boto3
-jsonpickle
-boto_session_manager>=1.3.1

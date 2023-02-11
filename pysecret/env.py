@@ -7,7 +7,7 @@ import dataclasses
 
 
 @dataclasses.dataclass
-class BaseEnv:
+class BaseEnvVar:
     """
     A base class for environment secrets data container.
     """
@@ -25,8 +25,10 @@ class BaseEnv:
 
 
 @dataclasses.dataclass
-class AWSEnvVar(BaseEnv):
+class AWSEnvVar(BaseEnvVar):
     """
+    AWS related environment variable secrets.
+
     Ref:
 
     - https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html

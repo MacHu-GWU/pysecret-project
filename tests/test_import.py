@@ -12,7 +12,7 @@ def test():
     _ = pysecret.path_bashrc
     _ = pysecret.path_zshrc
 
-    _ = pysecret.BaseEnv
+    _ = pysecret.BaseEnvVar
     _ = pysecret.AWSEnvVar
 
     _ = pysecret.JsonSecret

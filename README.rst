@@ -22,7 +22,6 @@
 
 ------
 
-
 .. image:: https://img.shields.io/badge/Link-Document-green.svg
       :target: https://pysecret.readthedocs.io/index.html
 
@@ -55,18 +54,18 @@ Welcome to ``pysecret`` Documentation
     :class: this-will-duplicate-information-and-it-is-still-useful-here
     :local:
 
-
 ``pysecret`` is a library to ease your life dealing with secret information.
 
-For example, **if you have a database connection information, so you can't include it in your source code, but you want to easily and securely access it**, then ``pysecret`` is the library for you. It provides several options out of the box:
+For example, **if you have a database connection information, so you should not include it in your source code**. ``pysecret`` is the library that provides several options to deploy or access your secret data securely:
 
 **Features**:
 
-1. access secret in environment variable from commandline, shell scripts, or Python.
-2. access secret in json file from Python.
-3. use AWS Key Management Service or AWS Secret Manager to access your secret info.
-
-For large file or binary data encryption, I highly recommend you to use AWS Key Management Service and AWS Secret Manager to fetch your encryption key, then use `windtalker <https://pypi.org/project/windtalker/>`_ library to encrypt it.
+1. access secret in Environment Variable.
+2. access secret in shell script.
+3. access secret in json file from Python.
+4. use AWS Key Management Service to encrypt or decrypt your data.
+5. deploy your secret to AWS Parameter Store and use it in your application code.
+6. deploy your secret to AWS Secret Manager and use it in your application code.
 
 
 Load Data From Environment

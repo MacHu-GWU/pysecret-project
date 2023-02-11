@@ -24,7 +24,7 @@ try:
         path_zshrc,
     )
     from .env import (
-        BaseEnv,
+        BaseEnvVar,
         AWSEnvVar,
     )
     from .js import (
