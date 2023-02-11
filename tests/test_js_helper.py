@@ -25,7 +25,7 @@ def test_create_json_if_not_exists():
     assert path_json.read_text() == "{}"
 
     # clean up
-    path_json.unlink(missing_ok=True)
+    path_json.unlink()
 
 
 def test_set_value_del_key():
