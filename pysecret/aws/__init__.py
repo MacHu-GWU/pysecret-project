@@ -4,6 +4,10 @@ from .parameter_store import (
     Parameter,
     deploy_parameter,
     delete_parameter,
+    get_parameter_tags,
+    update_parameter_tags,
+    put_parameter_tags,
+    remove_parameter_tags,
 )
 from .secret_manager import (
     Secret,

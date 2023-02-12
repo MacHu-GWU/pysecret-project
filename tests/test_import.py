@@ -23,6 +23,10 @@ def test():
     _ = pysecret.Parameter
     _ = pysecret.deploy_parameter
     _ = pysecret.delete_parameter
+    _ = pysecret.get_parameter_tags
+    _ = pysecret.update_parameter_tags
+    _ = pysecret.put_parameter_tags
+    _ = pysecret.remove_parameter_tags
 
     _ = pysecret.Secret
     _ = pysecret.deploy_secret

@@ -4,7 +4,7 @@ Release and Version History
 ==============================================================================
 
 
-2.2.1 (TODO)
+2.3.1 (TODO)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
 
@@ -13,6 +13,21 @@ Release and Version History
 **Bugfixes**
 
 **Miscellaneous**
+
+
+2.2.1 (2023-02-12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Features and Improvements**
+
+- add the following method to public API:
+    - ``pysecret.get_parameter_tags``
+    - ``pysecret.update_parameter_tags``
+    - ``pysecret.put_parameter_tags``
+    - ``pysecret.remove_parameter_tags``
+- now ``pysecret.deploy_parameter`` allow full tags replacement and deletion.
+- add ``version`` and ``label`` arguments to ``pysecret.Parameter.load(...)``.
+- add ``pysecret.Parameter.put_label(...)``.
+- add ``pysecret.Parameter.delete_label(...)``.
 
 
 2.1.1 (2023-02-11)

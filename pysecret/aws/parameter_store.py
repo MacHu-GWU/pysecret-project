@@ -20,6 +20,8 @@ except ImportError:  # pragma: no cover
 from ..compat import cached_property
 from ..js_helper import strip_comments
 from ..helper import ensure_only_one_true
+from .tagging import encode_tags, decode_tags
+
 
 JSON_PICKLE_KEY = "__jsonpickle__"
 
@@ -44,6 +46,99 @@ class ParameterDataTypeEnum(str, enum.Enum):
     ec2_image = "aws:ec2:image"
 
 
+def get_parameter_tags(
+    ssm_client,
+    name: str,
+) -> T.Dict[str, str]:
+    """
+    Get parameter tags.
+
+    Ref:
+
+    - list_tags_for_resource: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.list_tags_for_resource
+
+    :return: return empty dict if parameter doesn't have tags. otherwise,
+        return tags in format of key value dict.
+    """
+    response = ssm_client.list_tags_for_resource(
+        ResourceType="Parameter",
+        ResourceId=name,
+    )
+    return decode_tags(response.get("TagList", []))
+
+
+def remove_parameter_tags(
+    ssm_client,
+    name: str,
+    tag_keys: T.List[str],
+):
+    """
+    Delete parameter tags.
+
+    Ref:
+
+    - remove_tags_from_resource: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.remove_tags_from_resource
+    """
+    ssm_client.remove_tags_from_resource(
+        ResourceType="Parameter",
+        ResourceId=name,
+        TagKeys=tag_keys,
+    )
+
+
+def update_parameter_tags(
+    ssm_client,
+    name: str,
+    tags: T.Dict[str, str],
+):
+    """
+    Create or update (partial update) tags.
+
+    Ref:
+
+    - add_tags_to_resource: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.add_tags_to_resource
+    """
+    ssm_client.add_tags_to_resource(
+        ResourceType="Parameter",
+        ResourceId=name,
+        Tags=encode_tags(tags),
+    )
+
+
+def put_parameter_tags(
+    ssm_client,
+    name: str,
+    tags: T.Optional[T.Dict[str, str]] = None,
+):
+    """
+    Full replacement update tags.
+
+    - if None, then do nothing
+    - if empty dict, then delete tags
+    - if non-empty dict, then do full replacement update
+    """
+    if tags is None:
+        return
+
+    existing_tags = get_parameter_tags(ssm_client, name)
+
+    if len(tags) == 0:
+        if len(existing_tags):  # only run remove tags when there are existing tags
+            remove_parameter_tags(ssm_client, name, list(existing_tags))
+    else:
+        # if to-update tags is super set of the existing tags
+        # then no need to run remove tags
+        # otherwise, need to run remove tags
+        if not (len(set(existing_tags).difference(set(tags))) == 0):
+            remove_parameter_tags(ssm_client, name, list(existing_tags))
+
+        ssm_client.add_tags_to_resource(
+            ResourceType="Parameter",
+            ResourceId=name,
+            Tags=encode_tags(tags),
+        )
+
+
 @dataclasses.dataclass
 class Parameter:
     """
@@ -56,6 +151,7 @@ class Parameter:
         :meth:`Parameter.json_dict`, :meth:`Parameter.json_list`,
         :meth:`Parameter.py_object` to access the data.
     """
+
     Name: str = dataclasses.field()
     Type: str = dataclasses.field()
     Value: str = dataclasses.field()
@@ -65,22 +161,44 @@ class Parameter:
     ARN: T.Optional[str] = dataclasses.field(default=None)
     Selector: T.Optional[str] = dataclasses.field(default=None)
     SourceResult: T.Optional[str] = dataclasses.field(default=None)
+    Tags: T.Dict[str, str] = dataclasses.field(default_factory=dict)
+    Labels: T.List[str] = dataclasses.field(default_factory=list)
 
     @classmethod
     def load(
         cls,
         ssm_client,
         name: str,
+        version: T.Optional[int] = None,
+        label: T.Optional[str] = None,
         with_decryption: T.Optional[bool] = None,
+        with_tags: bool = False,
     ) -> T.Optional["Parameter"]:
         """
         Load parameter data.
+
+        :param name: the raw parameter name, don't set version and label here
+        :param version: the integer version
+        :param label: the string label
+        :param with_decryption: is this parameter a secure string?
+        :param with_tags: also get resource tags?
 
         Ref:
 
         - get_parameter: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.get_parameter
         """
+        # preprocess input arguments
+        if (version is not None) and (label is not None):  # pragma: no cover
+            raise ValueError("You cannot set both `version` and `label`!")
+        elif version is not None:
+            name = f"{name}:{version}"
+        elif label is not None:
+            name = f"{name}:{label}"
+        else:
+            pass
+
         kwargs = dict(Name=name)
+
         if with_decryption is not None:
             kwargs["WithDecryption"] = with_decryption
 
@@ -100,14 +218,13 @@ class Parameter:
             )
             # check if the Type is secure string
             if parameter.Type == ParameterTypeEnum.secure_string.value:
-                # if already set with_decryption = True, then return
-                if with_decryption is True:
-                    return parameter
                 # if forget to set with_description = True, then do it again
-                else:
-                    return cls.load(ssm_client, name, True)
-            else:
-                return parameter
+                if with_decryption is not True:
+                    parameter = cls.load(ssm_client, name, with_decryption=True)
+            # if Type is not secure string or already set with_decryption = True
+            if with_tags:
+                parameter.Tags = get_parameter_tags(ssm_client, name)
+            return parameter
         # if not exists, return None
         except Exception as e:
             if "ParameterNotFound" in str(e):
@@ -179,9 +296,48 @@ class Parameter:
     def aws_region(self) -> str:
         return self.ARN.split(":")[3]
 
-    # @cached_property
-    # def labels(self) -> dict:
-    #     return pass
+    def put_label(
+        self,
+        ssm_client,
+        labels: T.List[str],
+    ) -> dict:
+        """
+        Put label to parameter version, this will automatically move label from
+        other version if the label already exists.
+
+        Ref:
+
+        - label_parameter_version: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.label_parameter_version
+        """
+        response = ssm_client.label_parameter_version(
+            Name=self.Name,
+            ParameterVersion=self.Version,
+            Labels=labels,
+        )
+        self.Labels = labels
+        return response
+
+    def delete_label(
+        self,
+        ssm_client,
+        labels: T.List[str],
+    ) -> dict:
+        """
+        Delete labels from parameter version.
+
+        Ref:
+
+        - unlabel_parameter_version: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ssm.html#SSM.Client.unlabel_parameter_version
+        """
+        response = ssm_client.unlabel_parameter_version(
+            Name=self.Name,
+            ParameterVersion=self.Version,
+            Labels=labels,
+        )
+        for label in labels:
+            if label in self.Labels:
+                self.Labels.remove(label)
+        return response
 
 
 def deploy_parameter(
@@ -198,7 +354,7 @@ def deploy_parameter(
     tier_is_advanced: bool = False,
     tier_is_intelligent: bool = False,
     policies: T.Optional[str] = None,
-    tags: T.Dict[str, str] = None,
+    tags: T.Optional[T.Dict[str, str]] = None,
     overwrite: bool = False,
     skip_if_duplicated: bool = True,
 ) -> T.Optional[Parameter]:
@@ -234,7 +390,8 @@ def deploy_parameter(
     :param tier_is_advanced: is this advanced tier?
     :param tier_is_intelligent: is this intelligent tier?
     :param policies: access policy
-    :param tags: aws resource tags in python dict
+    :param tags: if None, then don't update tags. if empty dict, then delete tags,
+        if non-empty dict, then do full replacement update.
     :param overwrite: if False, then raise error when overwriting an existing parameter
     :param skip_if_duplicated: if True, then won't do deployment if parameter data
         is the same as the one in the latest version.
@@ -309,7 +466,7 @@ def deploy_parameter(
             raise ValueError(
                 f"you cannot set kms_key_id = {kms_key_id!r}, "
                 f"use_default_kms_key = {use_default_kms_key!r} "
-                f"when type is SecureString!"
+                f"when type is NOT SecureString!"
             )
         put_parameter_kwargs["KeyId"] = kms_key_id  # pragma: no cover
         with_encryption = True  # pragma: no cover
@@ -318,7 +475,7 @@ def deploy_parameter(
             raise ValueError(
                 f"you cannot set kms_key_id = {kms_key_id!r}, "
                 f"use_default_kms_key = {use_default_kms_key!r} "
-                f"when type is SecureString!"
+                f"when type is NOT SecureString!"
             )
         put_parameter_kwargs["KeyId"] = DEFAULT_KMS_KEY
         with_encryption = True
@@ -349,11 +506,6 @@ def deploy_parameter(
     if policies is not None:  # pragma: no cover
         put_parameter_kwargs["Policies"] = policies
 
-    # tag
-    if tags is None:
-        tags = dict()
-    tags_ = [{"Key": k, "Value": v} for k, v in tags.items()]
-
     # overwrite
     if overwrite:
         put_parameter_kwargs["Overwrite"] = overwrite
@@ -371,8 +523,8 @@ def deploy_parameter(
         )
         # if not exists, do create
         if parameter is None:
-            if len(tags_):
-                put_parameter_kwargs["Tags"] = tags_
+            if tags:
+                put_parameter_kwargs["Tags"] = encode_tags(tags)
             response = ssm_client.put_parameter(**put_parameter_kwargs)
             return Parameter._from_put_parameter_response(
                 put_parameter_kwargs, response
@@ -381,28 +533,19 @@ def deploy_parameter(
         else:
             # if the same, do nothing
             if parameter.Value == put_parameter_kwargs["Value"]:
+                put_parameter_tags(ssm_client, name, tags)
                 return None
             # if not same, do update
             else:
                 response = ssm_client.put_parameter(**put_parameter_kwargs)
-                if len(tags_):
-                    ssm_client.add_tags_to_resource(
-                        ResourceType="Parameter",
-                        ResourceId=name,
-                        Tags=tags_,
-                    )
+                put_parameter_tags(ssm_client, name, tags)
                 return Parameter._from_put_parameter_response(
                     put_parameter_kwargs, response
                 )
     # don't duplication check, just update
     else:
         response = ssm_client.put_parameter(**put_parameter_kwargs)
-        if len(tags_):
-            ssm_client.add_tags_to_resource(
-                ResourceType="Parameter",
-                ResourceId=name,
-                Tags=tags_,
-            )
+        put_parameter_tags(ssm_client, name, tags)
         return Parameter._from_put_parameter_response(put_parameter_kwargs, response)
 
 

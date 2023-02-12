@@ -14,4 +14,5 @@ sub packages and modules
     main <main>
     parameter_store <parameter_store>
     secret_manager <secret_manager>
+    tagging <tagging>
     
