@@ -10,3 +10,7 @@ from .secret_manager import (
     deploy_secret,
     delete_secret,
 )
+from .kms import (
+    kms_symmetric_encrypt,
+    kms_symmetric_decrypt,
+)

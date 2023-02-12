@@ -45,6 +45,8 @@ try:
         Secret,
         deploy_secret,
         delete_secret,
+        kms_symmetric_encrypt,
+        kms_symmetric_decrypt,
     )
 except ImportError:  # pragma: no cover
     pass

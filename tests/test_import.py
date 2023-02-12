@@ -28,6 +28,9 @@ def test():
     _ = pysecret.deploy_secret
     _ = pysecret.delete_secret
 
+    _ = pysecret.kms_symmetric_encrypt
+    _ = pysecret.kms_symmetric_decrypt
+
     with pytest.raises(AttributeError):
         _ = pysecret.AWSSecret
 
