@@ -525,6 +525,8 @@ def deploy_parameter(
         if parameter is None:
             if tags:
                 put_parameter_kwargs["Tags"] = encode_tags(tags)
+            if overwrite:
+                put_parameter_kwargs.pop("Overwrite")
             response = ssm_client.put_parameter(**put_parameter_kwargs)
             return Parameter._from_put_parameter_response(
                 put_parameter_kwargs, response

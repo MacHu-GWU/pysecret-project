@@ -15,6 +15,13 @@ Release and Version History
 **Miscellaneous**
 
 
+2.2.2 (2023-02-12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+- fix a bug that ``pysecret.deploy_parameter`` should not use ``tags`` and ``overwrite`` together when creating a new parameter.
+
+
 2.2.1 (2023-02-12)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Features and Improvements**
