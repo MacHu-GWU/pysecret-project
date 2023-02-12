@@ -35,6 +35,8 @@ Release and Version History
     - ``pysecret.Secret``: manage secrets in AWS Secret Manager
     - ``pysecret.deploy_secret``: manage secrets in AWS Secret Manager
     - ``pysecret.delete_secret``: manage secrets in AWS Secret Manager
+    - ``pysecret.kms_symmetric_encrypt``: encrypt data using AWS KMS
+    - ``pysecret.kms_symmetric_decrypt``: decrypt data using AWS KMS
 
 **Minor Improvements**
 
