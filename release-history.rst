@@ -20,6 +20,7 @@ Release and Version History
 **Breaking Change**
 
 - Redesigned the api. 2.X will not compatible to 1.X at all
+- drop support for Python3.6, only supports for Python3.7+
 
 **Features and Improvements**
 

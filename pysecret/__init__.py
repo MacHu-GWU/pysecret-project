@@ -50,3 +50,16 @@ except ImportError:  # pragma: no cover
     pass
 except Exception as e:  # pragma: no cover
     raise e
+
+
+def __getattr__(name: str):  # pragma: no cover
+    if name in [
+        "EnvSecret",
+        "get_home_path",
+        "AWSSecret",
+    ]:
+        raise AttributeError(
+            f"The pysecret.{name} API has been removed since 2.X! "
+            f"You can either downgrade to 1.0.4 or update your code."
+        )
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

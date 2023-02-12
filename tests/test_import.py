@@ -28,6 +28,15 @@ def test():
     _ = pysecret.deploy_secret
     _ = pysecret.delete_secret
 
+    with pytest.raises(AttributeError):
+        _ = pysecret.AWSSecret
+
+    with pytest.raises(AttributeError):
+        _ = pysecret.EnvSecret
+
+    with pytest.raises(AttributeError):
+        _ = pysecret.get_home_path
+
 
 if __name__ == "__main__":
     import os
