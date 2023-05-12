@@ -15,6 +15,13 @@ Release and Version History
 **Miscellaneous**
 
 
+2.2.3 (2023-05-12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+- fix a bug that sometime certain attributes are not available in AWS Parameter and Secret object.
+
+
 2.2.2 (2023-02-12)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Bugfixes**
