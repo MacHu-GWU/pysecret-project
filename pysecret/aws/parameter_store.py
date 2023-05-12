@@ -153,11 +153,11 @@ class Parameter:
     """
 
     Name: str = dataclasses.field()
-    Type: str = dataclasses.field()
     Value: str = dataclasses.field()
-    Version: int = dataclasses.field()
-    LastModifiedDate: datetime = dataclasses.field()
-    DataType: str = dataclasses.field()
+    Type: T.Optional[str] = dataclasses.field(default=None)
+    Version: T.Optional[int] = dataclasses.field(default=None)
+    LastModifiedDate: T.Optional[datetime] = dataclasses.field(default=None)
+    DataType: T.Optional[str] = dataclasses.field(default=None)
     ARN: T.Optional[str] = dataclasses.field(default=None)
     Selector: T.Optional[str] = dataclasses.field(default=None)
     SourceResult: T.Optional[str] = dataclasses.field(default=None)
@@ -238,15 +238,22 @@ class Parameter:
         put_parameter_kwargs: dict,
         put_parameter_response: dict,
     ):
+        last_modified_date = (
+            put_parameter_response.get("ResponseMetadata", {})
+            .get("HTTPHeaders", {})
+            .get("date")
+        )
+        if last_modified_date is not None:
+            last_modified_date = datetime.strptime(
+                last_modified_date,
+                "%a, %d %b %Y %H:%M:%S %Z",
+            )
         return Parameter(
             Name=put_parameter_kwargs["Name"],
-            Type=put_parameter_kwargs["Type"],
+            Type=put_parameter_kwargs.get("Type"),
             Value=put_parameter_kwargs["Value"],
-            Version=put_parameter_response["Version"],
-            LastModifiedDate=datetime.strptime(
-                put_parameter_response["ResponseMetadata"]["HTTPHeaders"]["date"],
-                "%a, %d %b %Y %H:%M:%S %Z",
-            ),
+            Version=put_parameter_response.get("Version"),
+            LastModifiedDate=last_modified_date,
             ARN=None,
             DataType="text",
         )

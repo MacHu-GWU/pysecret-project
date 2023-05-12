@@ -28,8 +28,8 @@ class Secret:
     """
     ARN: str = dataclasses.field()
     Name: str = dataclasses.field()
-    VersionId: str = dataclasses.field()
-    CreatedDate: datetime = dataclasses.field()
+    VersionId: T.Optional[str] = dataclasses.field(default=None)
+    CreatedDate: T.Optional[datetime] = dataclasses.field(default=None)
     SecretBinary: T.Optional[bytes] = dataclasses.field(default=None)
     SecretString: T.Optional[str] = dataclasses.field(default=None)
     VersionStages: T.List[str] = dataclasses.field(default_factory=list)
@@ -91,18 +91,20 @@ class Secret:
         create_or_update_secret_kwargs: dict,
         create_or_update_secret_response: dict,
     ):
+        created_date = (
+            create_or_update_secret_response.get("ResponseMetadata", {})
+            .get("HTTPHeaders", {})
+            .get("date")
+        )
+        if created_date is not None:
+            created_date = datetime.strptime(created_date, "%a, %d %b %Y %H:%M:%S %Z")
         return Secret(
             ARN=create_or_update_secret_response["ARN"],
             Name=create_or_update_secret_response["Name"],
-            VersionId=create_or_update_secret_response["VersionId"],
+            VersionId=create_or_update_secret_response.get("VersionId"),
             SecretBinary=create_or_update_secret_kwargs.get("SecretBinary"),
             SecretString=create_or_update_secret_kwargs.get("SecretString"),
-            CreatedDate=datetime.strptime(
-                create_or_update_secret_response["ResponseMetadata"]["HTTPHeaders"][
-                    "date"
-                ],
-                "%a, %d %b %Y %H:%M:%S %Z",
-            ),
+            CreatedDate=created_date,
         )
 
     @property
