@@ -224,6 +224,17 @@ class Parameter:
             # if Type is not secure string or already set with_decryption = True
             if with_tags:
                 parameter.Tags = get_parameter_tags(ssm_client, name)
+            # load labels information from the selector
+            if parameter.Selector:
+                if ":" in parameter.Selector:
+                    labels = parameter.Selector.split(":")[1].split(",")
+                    is_selector_is_version = False
+                    for label in labels:
+                        if label.isdigit():
+                            is_selector_is_version = True
+                            break
+                    if is_selector_is_version is False:
+                        parameter.Labels = labels
             return parameter
         # if not exists, return None
         except Exception as e:

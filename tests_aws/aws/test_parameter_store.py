@@ -297,6 +297,15 @@ class TestParameter:
         param = Parameter.load(ssm_client, self.param_name_string)
         assert param.Version == version + 2
 
+        # load by version
+        param = Parameter.load(
+            ssm_client,
+            self.param_name_string,
+            version=1,
+        )
+        assert param.Version == 1
+        assert param.Labels == []
+
     def test_update_tags(self):
         # create without tags
         deploy_parameter(
@@ -412,26 +421,22 @@ class TestParameter:
         )
         param = Parameter.load(ssm_client, self.param_name_labels, label="v0.1.1")
         assert param.Version == 1
+        assert param.Labels == ["v0.1.1"]
 
         param2.put_label(
             ssm_client,
-            [
-                "v0.1.1",
-            ],
+            ["v0.1.1"],
         )
         param = Parameter.load(ssm_client, self.param_name_labels, label="v0.1.1")
         assert param.Version == 2
+        assert param.Labels == ["v0.1.1"]
 
         time.sleep(6)
         response = param.delete_label(
             ssm_client,
-            [
-                "v0.1.1",
-            ],
+            ["v0.1.1"],
         )
-        assert response["RemovedLabels"] == [
-            "v0.1.1",
-        ]
+        assert response["RemovedLabels"] == ["v0.1.1"]
 
         with pytest.raises(Exception) as e:
             Parameter.load(ssm_client, self.param_name_labels, label="v0.1.1")
