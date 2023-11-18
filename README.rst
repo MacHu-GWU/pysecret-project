@@ -19,6 +19,9 @@
 
 .. image:: https://img.shields.io/pypi/dm/pysecret.svg
 
+.. image:: https://img.shields.io/badge/Release_History!--None.svg?style=social
+    :target: https://github.com/MacHu-GWU/pysecret-project/blob/main/release-history.rst
+
 .. image:: https://img.shields.io/badge/STAR_Me_on_GitHub!--None.svg?style=social
     :target: https://github.com/MacHu-GWU/pysecret-project
 

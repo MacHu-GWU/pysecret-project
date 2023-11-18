@@ -15,6 +15,17 @@ Release and Version History
 **Miscellaneous**
 
 
+2.2.4 (2023-11-18)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Bugfixes**
+
+- fix a bug that when load AWS SSM parameter using label, the returned Parameter object doesn't have the correct label information.
+
+**Miscellaneous**
+
+- improved the documentation in the ``04-AWS-Parameter-Store.ipynb`` notebook.
+
+
 2.2.3 (2023-05-12)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Bugfixes**
