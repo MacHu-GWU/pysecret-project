@@ -41,6 +41,7 @@ description: "How the pywf-oss skills themselves are written: the base and invok
   | `<slug>` | The Read the Docs project slug: the project name with `_` replaced by `-` |
   | `<version>`, `<last_tag>` | A version number, and the latest git tag |
   | `<cli_name>` | The command name registered in `[project.scripts]` |
+  | `<skill_name>` | The library's own API skill, `pypi-<package_name>`, written by `pywf-oss-write-pypi-skill` |
   | `<dist_name>` | Any PyPI distribution name, in dependency work |
   | `<key_path>` | A dotted key path in `$HOME/home_secret.toml` |
   | `<run_id>` | A GitHub Actions run id |

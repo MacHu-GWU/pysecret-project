@@ -1,6 +1,6 @@
 ---
 name: pywf-oss-write-pypi-skill
-description: "Generate an Agent Skill, named after the package, that documents this library's public API and command line interface, so future sessions in other projects can use the library without re-reading its source. Use when the user asks to turn this library into a Claude skill, usually after a release."
+description: "Generate an Agent Skill, named pypi-<package_name>, that documents this library's public API and command line interface, so future sessions in other projects can use the library without re-reading its source. Use when the user asks to turn this library into a Claude skill, usually after a release."
 ---
 
 Generate an Agent Skill that lets future sessions use this library through its public API, without loading the source.
@@ -10,13 +10,13 @@ Read ../pywf-oss-base/SKILL.md, then:
 
 ## Where to write the output
 
-Write to `.claude/skills/<package_name>/` in this repo, and commit it: the skill ships with the source, and the README tells users how to copy it into their own projects (Step 6). Never write to `~/.claude/skills/` unless the user asks. If the target directory exists, ask before overwriting.
+Write to `.claude/skills/<skill_name>/` in this repo, and commit it: the skill ships with the source, and the README tells users how to copy it into their own projects (Step 6). Never write to `~/.claude/skills/` unless the user asks. If the target directory exists, ask before overwriting.
 
 ## Step 1: Inspect the project
 
 From `pyproject.toml` at the working-directory root, take:
 
-- `[project].name`: `<package_name>`, which is also the skill's name.
+- `[project].name`: `<package_name>`. The skill's name is `pypi-<package_name>`, called `<skill_name>` below: the `pypi-` prefix marks it as the API reference of an installed library, and keeps it apart from the package name and from the `pywf-oss-*` skills. It is both the folder name and the frontmatter `name`.
 - `[project].version`: for the skill header.
 - `[project.scripts]`, if present: the CLI entry point (such as `<cli_name> = "<package_name>.cli:main"`) and its executable name, the key.
 
@@ -46,7 +46,7 @@ Read the entry-point module, and walk the whole command tree: every subcommand, 
 ## Step 5: Write the skill
 
 ```
-<base>/<package_name>/
+<base>/<skill_name>/
 ├── SKILL.md
 └── ref/
     ├── public-api.md
@@ -57,6 +57,7 @@ Read the entry-point module, and walk the whole command tree: every subcommand, 
 
 It must suffice for common tasks **without** `ref/`, in 50 to 150 lines:
 
+- **Frontmatter `name`:** `<skill_name>`.
 - **Frontmatter `description`:** the library name, what it does in one sentence, and its top public symbols, so the skill surfaces on matching requests.
 - **Purpose:** one paragraph.
 - **Import:** the two canonical forms above, nothing else.
@@ -82,13 +83,13 @@ If `README.rst` has no such section yet, add one after the install section, so u
 Use with AI Coding Agents
 ------------------------------------------------------------------------------
 
-This repo ships an `Agent Skill <https://code.claude.com/docs/en/skills>`_ that documents the public API of ``<package_name>``, so an AI coding agent such as Claude Code can use the library without reading its source. It lives in `.claude/skills/<package_name> <<repo_url>/tree/main/.claude/skills/<package_name>>`_. To use it in your project, copy it into your project's ``.claude/skills/`` folder. Run this from your project's root:
+This repo ships an `Agent Skill <https://code.claude.com/docs/en/skills>`_ that documents the public API of ``<package_name>``, so an AI coding agent such as Claude Code can use the library without reading its source. It lives in `.claude/skills/<skill_name> <<repo_url>/tree/main/.claude/skills/<skill_name>>`_. To use it in your project, copy it into your project's ``.claude/skills/`` folder. Run this from your project's root:
 
 .. code-block:: console
 
     $ git clone --depth 1 <repo_url>.git /tmp/<repo_dir>
     $ mkdir -p .claude/skills
-    $ cp -R /tmp/<repo_dir>/.claude/skills/<package_name> .claude/skills/
+    $ cp -R /tmp/<repo_dir>/.claude/skills/<skill_name> .claude/skills/
 ```
 
 Then check that it renders on PyPI: `mise exec -- uvx --from readme-renderer python -m readme_renderer README.rst -o /dev/null`.
