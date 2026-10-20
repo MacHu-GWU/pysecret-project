@@ -4,10 +4,10 @@
 name: CI
 
 on:
-  push: # any push event to master will trigger this
-    branches: ["master"]
-  pull_request: # any pull request to master will trigger this
-    branches: ["master"]
+  push: # any push event to main will trigger this
+    branches: ["main"]
+  pull_request: # any pull request to main will trigger this
+    branches: ["main"]
   workflow_dispatch: # allows you to manually trigger run
 
 jobs:
