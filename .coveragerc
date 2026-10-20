@@ -2,12 +2,15 @@
 # for more info: https://coverage.readthedocs.io/en/latest/config.html
 [run]
 omit =
-    pysecret/_version.py
-    pysecret/cli.py
     pysecret/docs/*
     pysecret/tests/*
-    pysecret/aws/*
+    pysecret/vendor/*
+    pysecret/cli.py
+    pysecret/paths.py
+    pysecret/_version.py
     pysecret/compat.py
+    # need a real AWS account, tested by tests_aws/ instead of tests/
+    pysecret/aws/*
     pysecret/env.py
     pysecret/sh.py
 

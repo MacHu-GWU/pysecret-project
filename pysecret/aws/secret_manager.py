@@ -26,6 +26,7 @@ class Secret:
         :meth:`Secret.binary`, :meth:`Secret.string`, :meth:`Secret.json_dict`,
         :meth:`Secret.json_list` to access the data.
     """
+
     ARN: str = dataclasses.field()
     Name: str = dataclasses.field()
     VersionId: T.Optional[str] = dataclasses.field(default=None)
@@ -239,9 +240,9 @@ def deploy_secret(
         if add_replica_regions is not None:  # pragma: no cover
             create_or_update_secret_kwargs["AddReplicaRegions"] = add_replica_regions
         if force_overwrite_replica_secret is not None:  # pragma: no cover
-            create_or_update_secret_kwargs[
-                "ForceOverwriteReplicaSecret"
-            ] = add_replica_regions
+            create_or_update_secret_kwargs["ForceOverwriteReplicaSecret"] = (
+                add_replica_regions
+            )
         if client_request_token is not None:  # pragma: no cover
             create_or_update_secret_kwargs["ClientRequestToken"] = client_request_token
         response = sm_client.create_secret(**create_or_update_secret_kwargs)

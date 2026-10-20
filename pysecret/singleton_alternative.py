@@ -8,6 +8,7 @@ class CachedSpamManager(object):
     """
     Instance cache manager.
     """
+
     cached_klass = None
 
     def __init__(self):
@@ -30,8 +31,9 @@ class CachedSpamManager(object):
 
 class Spam(object):
     def __init__(self, name, *args, **kwargs):
-        msg = "Can't instantiate directly, use Cached{}Manager.new(name, ...) instead." \
-            .format(self.__class__.__name__)
+        msg = "Can't instantiate directly, use Cached{}Manager.new(name, ...) instead.".format(
+            self.__class__.__name__
+        )
         raise RuntimeError(msg)
 
     # Alternate constructor

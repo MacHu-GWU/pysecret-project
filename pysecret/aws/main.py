@@ -156,9 +156,7 @@ class AWSSecret(object):
         if description is not None:
             put_parameter_kwargs["Description"] = description
         if (use_default_kms_key is True) and (kms_key_id is not None):
-            msg = (
-                "you cannot set `use_default_kms_key` and " "`kms_key_id` at same time!"
-            )
+            msg = "you cannot set `use_default_kms_key` and `kms_key_id` at same time!"
             raise ValueError(msg)
         if use_default_kms_key:
             kms_key_id = self.KMSArgValueEnum.KeyId.aws_ssm

@@ -476,8 +476,7 @@ def deploy_parameter(
     with_encryption = False
     if (kms_key_id is not None) and (use_default_kms_key is True):
         raise ValueError(
-            "you cannot set `kms_key_id` and `use_default_kms_key = True` "
-            "at same time!"
+            "you cannot set `kms_key_id` and `use_default_kms_key = True` at same time!"
         )
     elif (kms_key_id is not None) and (use_default_kms_key is not True):
         if type_is_secure_string is False:

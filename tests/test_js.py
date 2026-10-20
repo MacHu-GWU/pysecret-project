@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from pysecret.js import JsonSecret
-from pysecret.tests import run_cov_test, dir_tests
 
-TEST_SECRET_JSON_FILE = dir_tests.joinpath("test_pysecret.json")
+from pysecret.paths import path_enum
+
+
+TEST_SECRET_JSON_FILE = path_enum.dir_unit_test.joinpath("test_pysecret.json")
 
 
 class TestJsonSecret(object):
@@ -35,4 +37,10 @@ class TestJsonSecret(object):
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.js", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.js",
+        preview=False,
+    )

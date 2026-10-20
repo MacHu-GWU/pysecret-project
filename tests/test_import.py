@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from pytest import raises, approx
 
 
 def test():
@@ -46,7 +45,10 @@ def test():
 
 
 if __name__ == "__main__":
-    import os
+    from pysecret.tests import run_cov_test
 
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(
+        __file__,
+        "pysecret",
+        preview=False,
+    )

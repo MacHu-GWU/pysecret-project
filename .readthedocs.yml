@@ -1,0 +1,22 @@
+# Ref: https://docs.readthedocs.io/en/stable/config-file/v2.html
+version: 2
+
+sphinx:
+  configuration: docs/source/conf.py
+
+build:
+  os: ubuntu-24.04
+  tools:
+    # Only runs pip and the mise.toml lookup below; the docs Python comes from mise.toml.
+    python: "3"
+  jobs:
+    pre_create_environment:
+      # Install uv using pip
+      - pip install uv
+    create_environment:
+      # Create the virtualenv with the dev Python from mise.toml ``[tools] python``
+      - uv venv --python "$(python -c "import pathlib, sys, tomllib; print(tomllib.loads(pathlib.Path(sys.argv[1]).read_bytes().decode())[sys.argv[2]][sys.argv[3]])" mise.toml tools python)" "${READTHEDOCS_VIRTUALENV_PATH}"
+    install:
+      # Install project with doc dependencies using uv
+      # UV_PROJECT_ENVIRONMENT tells uv to use ReadTheDocs venv instead of creating .venv
+      - UV_PROJECT_ENVIRONMENT="${READTHEDOCS_VIRTUALENV_PATH}" uv sync --extra doc

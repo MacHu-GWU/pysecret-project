@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pytest
-from pytest import raises
 from pysecret.singleton import CachedSpam
+
+from pytest import raises
 
 
 class BadLogger1(CachedSpam):
@@ -16,7 +16,8 @@ class BadLogger2(CachedSpam):
 class BadLogger3(CachedSpam):
     settings_uuid_field = "invalid_field"
 
-    def __real_init__(self, *args, **kwargs): pass
+    def __real_init__(self, *args, **kwargs):
+        pass
 
 
 def test_anti_pattern():
@@ -29,7 +30,9 @@ def test_anti_pattern():
     with raises(RuntimeError):  # suggest to use .new()
         BadLogger2()
 
-    with raises(NotImplementedError):  # suggest to implement def __real_init__(self, ...)
+    with raises(
+        NotImplementedError
+    ):  # suggest to implement def __real_init__(self, ...)
         BadLogger2.new(name="system")
 
     with raises(RuntimeError):  # suggest to use .new()
@@ -79,7 +82,10 @@ def test():
 
 
 if __name__ == "__main__":
-    import os
+    from pysecret.tests import run_cov_test
 
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(
+        __file__,
+        "pysecret.singleton",
+        preview=False,
+    )

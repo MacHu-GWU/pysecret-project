@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from pysecret.sh_helper import append_line_if_not_exists
+from pysecret.sh_helper import load_var_value_from_shell_script_content
+from pysecret.sh_helper import load_var_value_from_shell_script
+
 from pathlib import Path
-from pysecret.sh_helper import (
-    append_line_if_not_exists,
-    load_var_value_from_shell_script_content,
-    load_var_value_from_shell_script,
-)
-from pysecret.tests import run_cov_test, dir_tests
+from pysecret.paths import path_enum
 
 
 def test_append_line_if_not_exists():
-    path_shell_script: Path = dir_tests.joinpath("env-var.sh")
+    path_shell_script: Path = path_enum.dir_unit_test.joinpath("env-var.sh")
     path: str = str(path_shell_script)
 
     append_line_if_not_exists(path, 'export var1="value1"')
@@ -43,4 +42,10 @@ def test_load_var_value_from_shell_script_content():
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.sh_helper", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.sh_helper",
+        preview=False,
+    )

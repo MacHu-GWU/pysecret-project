@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
+from pysecret.aws.parameter_store import ParameterTypeEnum
+from pysecret.aws.parameter_store import Parameter
+from pysecret.aws.parameter_store import deploy_parameter
+from pysecret.aws.parameter_store import delete_parameter
+from pysecret.aws.parameter_store import update_parameter_tags
+
 import pytest
 import time
 import dataclasses
+from pysecret.tests.aws import bsm
+from pysecret.tests.aws import py_ver
 
-from pysecret.tests import bsm, py_ver, run_cov_test
-from pysecret.aws.parameter_store import (
-    ParameterTypeEnum,
-    Parameter,
-    deploy_parameter,
-    delete_parameter,
-    update_parameter_tags,
-)
 
 ssm_client = bsm.ssm_client
 
@@ -444,4 +444,10 @@ class TestParameter:
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.aws.parameter_store", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.aws.parameter_store",
+        preview=False,
+    )

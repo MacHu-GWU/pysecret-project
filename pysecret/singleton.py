@@ -7,18 +7,22 @@ class CachedSpam(object):
     """
     Cache instance with based on its' name.
     """
+
     settings_uuid_field = None
 
     _cache = None
 
     def __init__(self, *args, **kwargs):
-        msg = "Can't instantiate directly, use {}.new(...) instead." \
-            .format(self.__class__.__name__)
+        msg = "Can't instantiate directly, use {}.new(...) instead.".format(
+            self.__class__.__name__
+        )
         raise RuntimeError(msg)
 
     def __real_init__(self, *args, **kwargs):
-        msg = ("You have to implement ``def __real_init__(self, ...)`` "
-               "like you implement ``def __init__(self, ...)``!")
+        msg = (
+            "You have to implement ``def __real_init__(self, ...)`` "
+            "like you implement ``def __init__(self, ...)``!"
+        )
         raise NotImplementedError(msg)
 
     @classmethod
@@ -36,7 +40,8 @@ class CachedSpam(object):
 
         if cls.settings_uuid_field not in kwargs:
             msg = "Can't find '{}' in {} Please use `CachedSpam.new({}=xxx)`".format(
-                cls.settings_uuid_field, kwargs, cls.settings_uuid_field)
+                cls.settings_uuid_field, kwargs, cls.settings_uuid_field
+            )
             raise SyntaxError(msg)
 
         uuid = kwargs[cls.settings_uuid_field]

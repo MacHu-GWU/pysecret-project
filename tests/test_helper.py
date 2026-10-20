@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from pysecret.helper import ensure_only_one_true
+
 import pytest
-from pysecret.helper import (
-    ensure_only_one_true,
-)
-from pysecret.tests import run_cov_test
 
 
 def test_ensure_only_one_true():
@@ -14,7 +12,7 @@ def test_ensure_only_one_true():
             ("xyz", False),
         ]
     )
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError):
         ensure_only_one_true(
             [
                 ("abc", True),
@@ -24,4 +22,10 @@ def test_ensure_only_one_true():
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.helper", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.helper",
+        preview=False,
+    )

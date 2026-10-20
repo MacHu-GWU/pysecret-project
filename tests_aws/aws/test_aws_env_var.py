@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from boto_session_manager import BotoSesManager
-from pysecret.tests import bsm, run_cov_test
 from pysecret.env import AWSEnvVar
+
+from boto_session_manager import BotoSesManager
+from pysecret.tests.aws import bsm
 
 
 class TestAWSEnvVar:
@@ -39,4 +40,10 @@ class TestAWSEnvVar:
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.env", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.env",
+        preview=False,
+    )

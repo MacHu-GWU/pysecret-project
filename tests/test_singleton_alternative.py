@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import pytest
+from pysecret.singleton_alternative import CachedSpamManager
+from pysecret.singleton_alternative import Spam
+
 from pytest import raises
-from pysecret.singleton_alternative import CachedSpamManager, Spam
 
 
 class Logger(Spam):
@@ -12,7 +13,8 @@ class Logger(Spam):
         self.name = name
         return self
 
-    def info(self, msg): pass
+    def info(self, msg):
+        pass
 
 
 class CachedLoggerManager(CachedSpamManager):
@@ -29,7 +31,8 @@ class Config(Spam):
         self.name = name
         return self
 
-    def info(self, msg): pass
+    def info(self, msg):
+        pass
 
 
 class CachedConfigManager(CachedSpamManager):
@@ -63,7 +66,10 @@ def test():
 
 
 if __name__ == "__main__":
-    import os
+    from pysecret.tests import run_cov_test
 
-    basename = os.path.basename(__file__)
-    pytest.main([basename, "-s", "--tb=native"])
+    run_cov_test(
+        __file__,
+        "pysecret.singleton_alternative",
+        preview=False,
+    )

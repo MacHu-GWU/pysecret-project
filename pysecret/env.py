@@ -17,7 +17,7 @@ class BaseEnvVar:
         kwargs = {f.name: os.environ.get(f.name) for f in dataclasses.fields(cls)}
         return cls(**kwargs)
 
-    def to_json(self, pretty: bool=True) -> str:
+    def to_json(self, pretty: bool = True) -> str:
         kwargs = dict()
         if pretty:
             kwargs["indent"] = 4

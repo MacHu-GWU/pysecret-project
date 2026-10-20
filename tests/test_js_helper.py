@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from pysecret.js_helper import (
-    create_json_if_not_exists,
-    set_value,
-    get_value,
-    del_key,
-)
-from pysecret.tests import run_cov_test, dir_tests
+from pysecret.js_helper import create_json_if_not_exists
+from pysecret.js_helper import set_value
+from pysecret.js_helper import get_value
+from pysecret.js_helper import del_key
+from pysecret.paths import path_enum
 
-path_json = dir_tests.joinpath("test.json")
+path_json = path_enum.dir_unit_test.joinpath("test.json")
 
 
 def test_create_json_if_not_exists():
@@ -57,4 +55,10 @@ def test_set_value_del_key():
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.js_helper", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.js_helper",
+        preview=False,
+    )

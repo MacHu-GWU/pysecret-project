@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from pysecret.tests import bsm, run_cov_test
-from pysecret.aws.kms import (
-    kms_symmetric_encrypt,
-    kms_symmetric_decrypt,
-)
+from pysecret.aws.kms import kms_symmetric_encrypt
+from pysecret.aws.kms import kms_symmetric_decrypt
+
+from pysecret.tests.aws import bsm
+
 
 kms_client = bsm.kms_client
 TEST_KMS_KEY_ALIAS = "alias/pysecret_test"
@@ -33,4 +33,10 @@ def test_encrypt_decrypt():
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.aws.kms", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.aws.kms",
+        preview=False,
+    )

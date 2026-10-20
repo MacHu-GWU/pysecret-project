@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
+from pysecret.aws.secret_manager import Secret
+from pysecret.aws.secret_manager import deploy_secret
+from pysecret.aws.secret_manager import delete_secret
+
 import pytest
 import time
-
-from pysecret.tests import bsm, py_ver, run_cov_test
-from pysecret.aws.secret_manager import (
-    Secret,
-    deploy_secret,
-    delete_secret,
-)
+from pysecret.tests.aws import bsm
+from pysecret.tests.aws import py_ver
 from rich import print as rprint
+
 
 sm_client = bsm.secretsmanager_client
 
@@ -154,4 +154,10 @@ def test_delete_secret():
 
 
 if __name__ == "__main__":
-    run_cov_test(__file__, "pysecret.aws.secret_manager", preview=False)
+    from pysecret.tests import run_cov_test
+
+    run_cov_test(
+        __file__,
+        "pysecret.aws.secret_manager",
+        preview=False,
+    )

@@ -1,0 +1,128 @@
+# [project] table: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
+[project]
+name = "pysecret"
+# Bump before each release (https://semver.org/), then ``mise run inst`` to update ``uv.lock``.
+version = "2.2.4"
+description = "utility tool that load secret information safely."
+# An SPDX license expression (PEP 639); keep ``LICENSE.txt`` in sync.
+# Read: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license-and-license-files
+# Valid identifiers: https://spdx.org/licenses/
+license = "MIT"
+license-files = ["LICENSE.txt", "AUTHORS.rst"]
+authors = [
+    { name = "Sanhe Hu", email = "husanhe@gmail.com" },
+]
+maintainers = [
+    { name = "Sanhe Hu", email = "husanhe@gmail.com" },
+]
+keywords = ["secret", "aws", "parameter store", "secret manager", "kms"]
+readme = "README.rst"
+requires-python = ">=3.11,<4.0"
+# Read: https://pypi.org/classifiers/
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+
+# --- Dependencies ---
+# Edit these lists, then ``mise run inst`` to update ``uv.lock`` and ``.venv``.
+dependencies = [
+]
+
+# --- Optional dependencies (extras) ---
+# Read: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#dependencies-optional-dependencies
+# Each one must support every Python version in ``requires-python``.
+[project.optional-dependencies]
+
+# local development
+dev = [
+    "rich>=14.3.4,<15.0.0",
+    # for the real AWS tests in ``tests_aws/``, not used by ``tests/``
+    "boto3>=1.40.0,<2.0.0",
+    "boto_session_manager>=1.8.1,<2.0.0",
+    "jsonpickle>=4.0.0,<5.0.0",
+]
+
+# tests and coverage
+test = [
+    "pytest>=9.1.1,<10.0.0",
+    "pytest-cov>=7.1.0,<8.0.0",
+]
+
+# docs build
+doc = [
+    "Sphinx>=8.2.3,<9.0.0", # held below 9 until its autodoc rewrite is verified
+    "sphinx-copybutton>=0.5.2,<1.0.0", # copy button on code blocks
+    "sphinx-design>=0.7.0,<1.0.0", # cards, tabs, grids
+    "sphinx-jinja>=2.0.2,<3.0.0", # jinja in reST
+    "furo==2025.12.19", # theme
+    "pygments>=2.18.0,<3.0.0", # syntax highlighting
+    "ipython>=8.18.1,<8.19.0", # notebook execution
+    "ipykernel>=7.3.0,<8.0.0", # notebook kernel
+    "nbsphinx>=0.9.8,<1.0.0", # notebooks as doc pages
+    "rstobj>=2.0.0,<3.0.0", # reST from Python
+    "docfly>=3.0.3,<4.0.0", # toctree and API reference
+]
+
+# mise tasks
+mise = [
+    "PyGithub>=2.8.0,<3.0.0", # GitHub API client
+    "httpx2>=2.13.1,<3.0.0", # Codecov and Read the Docs APIs
+]
+
+[project.urls]
+Homepage = "https://github.com/MacHu-GWU/pysecret-project"
+Documentation = "https://pysecret.readthedocs.io/en/latest/"
+Repository = "https://github.com/MacHu-GWU/pysecret-project"
+Issues = "https://github.com/MacHu-GWU/pysecret-project/issues"
+Changelog = "https://github.com/MacHu-GWU/pysecret-project/blob/main/release-history.rst"
+Download = "https://pypi.org/pypi/pysecret#files"
+
+# Read: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#creating-executable-scripts
+[project.scripts]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "pysecret*",
+]
+exclude = [
+    "pysecret.tests",
+    "pysecret.tests.*",
+    "pysecret.docs",
+    "pysecret.docs.*",
+]
+
+# --- ruff: ``mise run format`` / ``mise run lint`` ---
+[tool.ruff]
+extend-exclude = [
+    "pysecret/vendor",
+    ".claude/skills/*/assets", # templates, not valid Python
+]
+
+[tool.ruff.lint.per-file-ignores]
+# re-export modules
+"**/__init__.py" = ["F401"]
+"**/api.py" = ["F401"]
+
+# --- pytest 9+ native table ---
+# Read: https://docs.pytest.org/en/stable/reference/customize.html#pyproject-toml
+[tool.pytest]
+testpaths = ["tests"]
+# strict = true # only with a pinned pytest
+# filterwarnings = ["error"]
+# markers = ["slow: tests that take more than a few seconds"]
+
+# --- Build (``mise run build``); setuptools 77+ for PEP 639 ``license`` ---
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
