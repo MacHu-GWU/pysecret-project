@@ -1,0 +1,23 @@
+# Community Agent Skills, optional and installed on demand.
+#
+# How entries are added, reviewed, and installed: references/25-community-skills.md
+# Install one:  .venv/bin/python ${CLAUDE_SKILL_DIR}/../pywf-oss-base/scripts/install_community_skill.py --name <skill_name>
+# Every entry also has a `.claude/skills/<skill_name>/` line in the repo's .gitignore, so installed skills stay local
+# by default; delete that line to commit the skill with the repo.
+#
+# Fields:
+#   name                  the skill's folder name under .claude/skills/, equal to the `name` in its SKILL.md
+#   url                   pinned GitHub tree URL of the skill folder: https://github.com/<owner>/<repo>/tree/<40-char commit sha>/<path>
+#                         this is the single source of truth for repo, commit, and path
+#   license               SPDX id of the upstream repository license
+#   verified_on           date the entry was last checked (YYYY-MM-DD)
+#   when_to_use           the maintainer's own note: when this skill is worth installing
+#   upstream_description  the `description` of the upstream SKILL.md at the pinned commit, copied as is
+
+[[skill]]
+name = "logo-design"
+url = "https://github.com/kaankiziltug/logo-design-skill/tree/0ecf52e9a4b3ac92b714f7cc6e3148ab8c774134/skills/logo-design"
+license = "MIT"
+verified_on = "2026-10-15"
+when_to_use = "Designing or refreshing a logo, favicon, or app icon for a library's docs site, README, or PyPI page."
+upstream_description = """Professional logo and brand-mark design, from brief to production files. Guides discovery and the design brief, concept generation, choosing a mark type (wordmark, monogram, letterform, pictorial, abstract, emblem, mascot, combination), building clean geometric SVG logos, optical refinement, colour and typography, testing (16 px, one-colour, reversed, shelf test), client presentation, delivery variants and brand guidelines. Includes a searchable library of 1,400+ real-world SVG logos classified by type, technique, geometry and industry, plus scripts that audit SVGs and generate test sheets, presentation boards and export variants. Use this skill whenever the user wants a logo, logotype, wordmark, monogram, brand mark, symbol, app icon or favicon designed, redesigned, refreshed, critiqued or compared; asks for logo ideas or concepts; needs a design brief, logo guidelines, lockups or an identity system; or mentions branding a new company, product, app or project — even if they don't say the word "logo"."""

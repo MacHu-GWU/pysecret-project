@@ -1,0 +1,36 @@
+{
+    "model": "opus",
+    "permissions": {
+        "defaultMode": "auto",
+        "deny": [
+        ],
+        "allow": [
+            "Read(========== Read Section ==========)",
+            "Read(========== Write Section ==========)",
+            "Edit(.claude/*.md)",
+            "Edit(.claude/skills/*/*.md)",
+            "Edit(.claude/skills/*/SKILL.md)",
+            "Edit(.claude/skills/*/references/*.md)",
+            "Edit(.claude/skills/*/scripts/*.py)",
+            "Edit(./**/*.md)",
+            "Edit(./README.md)",
+            "Edit(./CLAUDE.md)",
+            "Edit(pysecret/**/*.py)",
+            "Edit(tests/**/*.py)",
+            "Edit(scripts/**/*.py)",
+            "Read(========== Bash Section ==========)",
+            "Bash(.venv/bin/python debug/**/*.py)",
+            "Bash(.venv/bin/python scripts/**/*.py)",
+            "Bash(.venv/bin/python config/**/*.py)",
+            "Bash(.venv/bin/python tests/**/*.py)",
+            "Bash(mise *)",
+            "Bash(uv *)",
+            "Bash(ruff *)",
+            "Read(========== Skill Section ==========)",
+            "Read(========== Web Search ==========)",
+            "WebSearch",
+            "Read(========== Web Fetch ==========)",
+            "WebFetch(domain:raw.githubusercontent.com)"
+        ]
+    }
+}

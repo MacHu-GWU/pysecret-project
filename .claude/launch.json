@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docs-html",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "exec .venv/bin/python -m http.server \"${PORT:-8765}\" --directory docs/build/html"],
+      "port": 8765
+    }
+  ]
+}
