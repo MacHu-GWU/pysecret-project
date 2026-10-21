@@ -50,6 +50,38 @@
       :target: https://pypi.org/pypi/pysecret#files
 
 
+Project Status: No Longer Maintained
+==============================================================================
+
+``pysecret`` is no longer maintained. Version 2.2.4 is the last release. It stays on PyPI and still installs, but it will get no bug fixes, no new features, and no support for new Python versions.
+
+**Why**
+
+``pysecret`` tried to do two jobs at once: store and load secrets, and serialize them (dict, list, and arbitrary Python objects through ``jsonpickle``). Serialization is the caller's job, and loading arbitrary objects with ``jsonpickle`` from a shared secret store can run arbitrary code. Once serialization is taken out, what is left is either something the standard library or a well-known package already does better (environment variables, ``.env``-style shell files, a local JSON file), or a thin wrapper around boto3 (AWS Parameter Store, Secrets Manager, KMS) that adds little over calling boto3 directly. There is no core feature left that justifies a separate library.
+
+**What to use instead**
+
+.. list-table::
+    :header-rows: 1
+
+    * - ``pysecret`` feature
+      - Use instead
+    * - ``BaseEnvVar``, ``AWSEnvVar``: load environment variables into a dataclass
+      - ``os.environ``, or `pydantic-settings <https://pypi.org/project/pydantic-settings/>`_ for typed settings
+    * - ``BaseShellScriptSecret``: read ``export KEY="value"`` lines from a shell script
+      - `python-dotenv <https://pypi.org/project/python-dotenv/>`_
+    * - ``JsonSecret``: local secrets in ``~/.pysecret.json``
+      - `home-secret-toml <https://github.com/MacHu-GWU/home_secret_toml-project>`_
+    * - AWS Parameter Store (``Parameter``, ``deploy_parameter``, ``delete_parameter``, parameter tags)
+      - `simple_aws_ssm_parameter_store <https://github.com/MacHu-GWU/simple_aws_ssm_parameter_store-project>`_, which also writes a new version only when something changed
+    * - AWS Secrets Manager (``Secret``, ``deploy_secret``, ``delete_secret``)
+      - boto3's `Secrets Manager client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/secretsmanager.html>`_
+    * - AWS KMS (``kms_symmetric_encrypt``, ``kms_symmetric_decrypt``)
+      - boto3's `KMS client <https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/kms.html>`_ (``encrypt`` and ``decrypt``)
+
+The rest of this page documents version 2.2.4 as it was.
+
+
 Welcome to ``pysecret`` Documentation
 ==============================================================================
 
